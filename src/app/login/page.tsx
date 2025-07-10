@@ -30,25 +30,23 @@ export default function SignInPage(){
         resolver: zodResolver(signInSchema), // this ( zodResolver(signInSchema)) now connects zod a powerful schmea validatior to react-hook-form  , it thefore tells react-hook-form use this schmea to validate imput before calling the onSubmit function , if validation fails errors are added to formState.errors 
         defaultValues : {
             username : "",
-            email : "",
             password : "", // these values here now prepopulate the form : in this case both fields are empty but we can pull from storage in case we need to remember the user 
         },
         mode : "onChange", // runs the validation as the user types , this is mostly great for disabling buttons live as the user interacts with the form 
     });
 
 // this code down here is used to watch the email and the password fiedls , everytime the eamil or password feild changes the functoin inside useEffect is ran 
-    const email = watch("email");
     const password = watch("password"); // this watch here allows to watch and track the specified values in real time ;
     const username = watch("username");
 
     useEffect(() => {
-        setIsFormValid(!!email && !!password); // so this functio inside here is ran everytime there is a chnage in the email and password fields , and with this ran each time it means that the button component will be rerendered each time in doing so 
-    }, [email , password]);
+        setIsFormValid(!!username && !!password); // so this functio inside here is ran everytime there is a chnage in the email and password fields , and with this ran each time it means that the button component will be rerendered each time in doing so 
+    }, [username , password]);
 
     const onSubmit = async (data : signInFormValues) => {
         try{
             setIsLoading(true);
-            await login( data.username , data.email , data.password)
+            await login( data.username , data.password)
         }catch (error){
             console.error('there was an error signing you in ');
             setError('Failed to log in. Please check your credentials');
@@ -85,21 +83,6 @@ export default function SignInPage(){
                                 </p>
                              )}
                         </div>
-                        <div className = "mb-4">
-                            <label htmlFor="email" className = 'mb-1 block text-sm  font-medium text-black'>
-                                Email
-                            </label>
-                            <input 
-                            type="email"
-                             id = "email"
-                             {...register("email")} // as said up ther this register part connects the input field to the form like for this example it connects the email field to the forom 
-                             placeholder="enter your email address"
-                             className = "w-full text-black rounded-lg border border-gray-600 p-2 placeholder:text-sm placeholder:text-gray-500 focus:border-black focus:outline-none focus:ring-black focus:ring-1"  />
-                             {errors.email && (
-                                <p className = "text-xs mt-1 text-red-500">
-                                    {errors.email.message}
-                                </p>
-                             )}                        </div>
                         <div className = 'mb-4 '>
                             <label htmlFor="password" className = 'mb-1 block text-sm font-medium text-black'>
                                 Password
