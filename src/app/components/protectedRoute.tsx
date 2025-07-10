@@ -12,18 +12,18 @@ type ProtectedRouteProps = { // this defines the props that this component will 
 }
 
 const ProtectedRoute = ({children} : ProtectedRouteProps ) => { // so what this function here does is that it checks if a user is logged in and if not it redirects them silently to the login page 
-    const {user} = useAuth(); // this comes from our global auth context if its null then we infer that the use is not logged in 
+    const {user , loading} = useAuth(); // this comes from our global auth context if its null then we infer that the use is not logged in 
     const router = useRouter(); // just as known this is for programatic navigation of the site 
 
     useEffect(() => { // this runs after the initial render if the user is not authenticatd then it returns them to the login 
-        if (!user) {
+        if (!loading && !user) {
             router.push('/login');
         }
-    },[user , router]) // these are the dependancies that are checked to see if the use is logged in or not : 
+    },[user , loading , router]) // these are the dependancies that are checked to see if the use is logged in or not : 
 
     // though not a must we are going to add this spinner logic while we check the user 
 
-    if (typeof user === 'undefined') {
+    if (loading) {
         return (
             <div className="flex items-center justify-center h-screen">
             <svg
