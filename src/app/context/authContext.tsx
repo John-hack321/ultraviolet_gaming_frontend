@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthStatus();
   }, []);
 
-  const signup = async ( username : string , password : string , email : string ) => {
+  const signup = async ( username : string , email : string , password : string ) => {
     try { // now we are going to define what happens on click of the sign up button 
       // since this time our data is going to be sent as payload rather than form data we are not going to use this for now 
     {/*
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const response = await axios.post('http://localhost:8000/auth/' , payload , {
           headers : {
             'Content-Type' : 'application/json',
-            'Accept' : 'applicaton/json',
+            'Accept' : 'application/json',
           }
         })
 
