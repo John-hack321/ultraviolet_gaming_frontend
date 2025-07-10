@@ -16,6 +16,7 @@ type AuthContextType = { // here we get o define what data or function the auth 
   login: ( username : string , password: string) => Promise<void>;
   logout: () => void;
   loading : boolean;
+  signup : (username : string , password : string , email : string ) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined); // the create context is used to create a context to share data accross our app ie. the logged in user 
@@ -69,6 +70,51 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthStatus();
   }, []);
 
+  const signup = async ( username : string , password : string , email : string ) => {
+    try { // now we are going to define what happens on click of the sign up button 
+      // since this time our data is going to be sent as payload rather than form data we are not going to use this for now 
+    {/*
+      const formData = new FormData();
+      formData.append('password', passowrd);
+      formData.append('username' , username);
+      formData.append('email' , email);
+      console.log('the user signup data is now being sent to the fast api backend ');
+      */}
+
+      const payload = {
+        username,
+        email,
+        password,
+        }
+
+        const response = await axios.post('http://localhost:8000/auth/' , payload , {
+          headers : {
+            'Content-Type' : 'application/json',
+            'Accept' : 'applicaton/json',
+          }
+        })
+
+      const accessToken = response.data.access_token;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      localStorage.setItem('token' , accessToken);
+      // now after the saving the access token in local storage we also need to store the current user in local storage 
+
+      const payloadDecoded = JSON.parse(atob(accessToken.split('.')[1]));
+      setUser({
+        id : payloadDecoded.id,
+        username : payloadDecoded.sub,
+      })
+
+      // then is when we redirect the user to the dashboard page
+
+      router.push("/dashboard");
+
+    }
+    catch (error){
+      console.error("there was an error signing you up");
+      throw(error);
+    }
+  }
 
   const login = async (username : string , password: string) => {
     try { // what we are doing here inside this function is we are creating form data expected by the fastapi auth2 endpoint 
@@ -113,7 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return ( // and now this is the component that we now return which houses all of the login and logout logic and goes foward to share it across all of the components 
-    <AuthContext.Provider value={{ user, login, logout , loading }}>
+    <AuthContext.Provider value={{ user, login, logout , loading , signup}}>
       {children}
     </AuthContext.Provider>
   );

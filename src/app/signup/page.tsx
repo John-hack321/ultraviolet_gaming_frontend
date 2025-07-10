@@ -4,10 +4,12 @@ import { useState , useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SignUpFormValues , signInFormValues, signUpSchema } from "../schemas/auth";
 
+import { useAuth } from "../context/authContext";
 
 import { useForm } from 'react-hook-form';
-import { resolve } from "path";
-import { Span } from "next/dist/trace";
+
+
+
 export default function SignUpPage(){
 
     const [isLoading , setIsLoading] = useState(false);
@@ -15,6 +17,7 @@ export default function SignUpPage(){
     const [error , setError ] = useState<string | null>(null);
     const router = useRouter();
 
+    const {signup} = useAuth();
     const {
         register,
         handleSubmit,
@@ -40,12 +43,26 @@ export default function SignUpPage(){
     }, [email , password]);
 
     const onSubmit = async (data : SignUpFormValues) => {
+        try{
+            setIsLoading(true);
+            await signup(data.username , data.email , data.password);
+        }catch(error){
+            console.log("error signing you up")
+            throw error;
+        }finally{
+            setIsLoading(false)
+        }
+    }
+
+{/*
+    const onSubmit = async (data : SignUpFormValues) => {
         setIsLoading(true);
         setError(null);
         // const result = await signUp(data);
         await new Promise((resolve) => setTimeout(resolve , 1000))
 
     }
+*/}
 
     return (
         <div className = 'flex min-h-screen w-full bg-white'>
