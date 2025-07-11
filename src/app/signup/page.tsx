@@ -80,7 +80,7 @@ export default function SignUpPage(){
                                 Username
                             </label>
                             <input type="username" 
-                            id="username "
+                            id="username"
                             {...register("username")}
                             placeholder="enter your username"
                             className = "text-black p-2 rounded-lg w-full  border border-gray-600 focus:ring-1 focus:ring-black focus:outline-none placeholder:text-gray-600  placeholder:text-sm "
