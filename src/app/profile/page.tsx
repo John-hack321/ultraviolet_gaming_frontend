@@ -1,27 +1,96 @@
-'use client'
+'use client';
 import Header from "../components/header";
 import NavBar from "../components/navBar";
-import { User, Plus, Trophy, Target, Star , Sword } from 'lucide-react';
-import { useState } from 'react';
-import {useForm} from "react-hook-form";
-import { TransactionFormValues, transactoinSchema } from "../schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { User, Plus, Trophy, Target, Star, Sword } from 'lucide-react';
+import { useState , useEffect } from 'react';
+import { LogOut } from "lucide-react";
+import { useAuth } from "../context/authContext";
+import ProtectedRoute from "../components/protectedRoute";
+import { UserProfileResponse } from "../api/users";
+import { fetchUserProfile } from "../api/users";
+import { doTransaction } from "../api/users";
+import AccountBalance from "../components/accountComponent";
+import { dot } from "node:test/reporters";
+import { transactoinSchema } from "../schemas/auth";
+import { setErrorMap } from "zod/v4";
 
+function ProfileContent() {
 
-export default function ProfilePage() {
+    const transData = {
+        'amount' : 0,
+        'type' : 1
+    }
+    const [transactionData , setTransactionData] = useState(transData)
+
     const [depositAmount, setDepositAmount] = useState('');
     const [withdrawAmount, setWithdrawAmount] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [userData, setUserData] = useState<UserProfileResponse | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const { logout } = useAuth();
 
-    const dummy_data = {
-        'balance': 400,
-        'username': "mike",
-        'phone': "(254) 724-027231",
-        'gamesPlayed': 24,
-        'wins': 18,
-        'winRate': 75,
-        'totalEarnings': 1250
+    // Dummy data for non-user specific stats
+    const stats = {
+        gamesPlayed: 24,
+        wins: 18,
+        winRate: 75,
+        totalEarnings: 1250
+    };
+
+    // Fetch user data on component mount
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const data = await fetchUserProfile();
+                setUserData(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Failed to load profile');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUserData();
+    }, []);
+
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 text-black">loading</div>
+            </div>
+        );
     }
 
+    // Error state
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center p-6 bg-white rounded-lg shadow-sm border max-w-md">
+                    <div className="text-red-500 text-lg mb-4">Error loading profile</div>
+                    <p className="text-gray-600 mb-4">{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // No data state
+    if (!userData) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                <div className="text-center p-6 bg-white rounded-lg shadow-sm border max-w-md">
+                    <div className="text-gray-600">No profile data available</div>
+                </div>
+            </div>
+        );
+    }
     const quickDepositAmounts = [100, 200, 500, 1000];
 
     const handleQuickDeposit = (amount: number) => {
@@ -30,16 +99,41 @@ export default function ProfilePage() {
 
 
 
-    const handleDeposit = () => {
-        console.log(`Depositing KES ${depositAmount}`);
-        // Add deposit logic here
+    const handleDeposit = async () => {
+        console.log(`depositing amount ${depositAmount}`)
+        try {
+            setLoading(true);
+            console.log('response beng sent from here now in the handledepoist function')
+            const data = await doTransaction(parseFloat(depositAmount), 1);
+            setUserData(data);
+            console.log('user data successfully updated')
+            setDepositAmount('');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to deposit');
+        } finally {
+            setLoading(false);
+        }
     };
 
-
-    const handleWithdraw = () => {
-        console.log(`Withdrawing KES ${withdrawAmount}`);
-        // Add withdrawal logic here
+    const handleWithdraw = async () => {
+        console.log(`withdrawing amount ${withdrawAmount}`)
+        try {
+            setLoading(true);
+            const data = await doTransaction(parseFloat(withdrawAmount), 2);
+            setUserData(data);
+            setWithdrawAmount('');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Failed to withdraw');
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleLogout = async () => {
+        console.log("the user is now being logged out ")
+        await logout()
+        console.log("logout has been successful")
+    }
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50">
@@ -57,8 +151,8 @@ export default function ProfilePage() {
                             <User size={40} color="white" />
                         </div>
                         <div className="text-center">
-                            <h2 className="text-gray-900 text-xl font-semibold">{dummy_data.username}</h2>
-                            <p className="text-gray-500 text-sm">{dummy_data.phone}</p>
+                            <h2 className="text-gray-900 text-xl font-semibold">{userData.username}</h2>
+                            <p className="text-gray-500 text-sm">{userData.phone}</p>
                         </div>
                     </div>
                 </div>
@@ -70,22 +164,22 @@ export default function ProfilePage() {
                         <div className="text-center p-3 bg-blue-50 rounded-lg">
                             <Trophy className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                             <p className="text-sm text-gray-600">Games Won</p>
-                            <p className="text-xl font-bold text-blue-600">{dummy_data.wins}</p>
+                            <p className="text-xl font-bold text-blue-600">{stats.wins}</p>
                         </div>
                         <div className="text-center p-3 bg-green-50 rounded-lg">
                             <Target className="w-8 h-8 text-green-600 mx-auto mb-2" />
                             <p className="text-sm text-gray-600">Win Rate</p>
-                            <p className="text-xl font-bold text-green-600">{dummy_data.winRate}%</p>
+                            <p className="text-xl font-bold text-green-600">{stats.winRate}%</p>
                         </div>
                         <div className="text-center p-3 bg-purple-50 rounded-lg">
                             <Star className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                             <p className="text-sm text-gray-600">Games Played</p>
-                            <p className="text-xl font-bold text-purple-600">{dummy_data.gamesPlayed}</p>
+                            <p className="text-lg font-semibold">{stats.gamesPlayed}</p>
                         </div>
                         <div className="text-center p-3 bg-orange-50 rounded-lg">
                             <Plus className="w-8 h-8 text-orange-600 mx-auto mb-2" />
-                            <p className="text-sm text-gray-600">Total Earnings</p>
-                            <p className="text-xl font-bold text-orange-600">KES {dummy_data.totalEarnings}</p>
+                            <p className="text-gray-500 text-sm">Total Earnings</p>
+                            <p className="text-lg font-semibold">KES {stats.totalEarnings}</p>
                         </div>
                     </div>
                 </div>
@@ -93,20 +187,8 @@ export default function ProfilePage() {
                 {/* Account Balance */}
                 <div className="bg-white rounded-lg shadow-sm border p-6">
                     <h3 className="text-gray-900 text-lg font-semibold mb-4">Account Balance</h3>
-                    <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <p className="text-blue-100 text-sm">Available Balance</p>
-                                <p className="text-3xl font-bold">
-                                    <span className="text-lg">KES</span> {dummy_data.balance}
-                                </p>
-                            </div>
-                            <div className="text-right">
-                                <p className="text-blue-100 text-sm">Ready to Stake</p>
-                                <p className="text-xl font-semibold">COD WARS</p>
-                            </div>
-                        </div>
-                    </div>
+                    {/* this is where the account balance component will go */}
+                    <AccountBalance balance = {300} />
                 </div>
 
                 {/* Quick Actions */}
@@ -186,6 +268,15 @@ export default function ProfilePage() {
                         </button>
                     </div>
                 </div>
+                <div className = "flex items-center border rounded-lg bg-white items-center justify-center p-4 shadow-sm">
+                    <div>
+                        <button 
+                        onClick = {handleLogout}
+                        className = "text-gray-600 px-3 py-2 border bg-gray-200 border-gray-600 justify-between gap-2 flex rounded-lg">
+                           <LogOut/> logout
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Navigation Bar */}
@@ -193,5 +284,14 @@ export default function ProfilePage() {
                 <NavBar />
             </div>
         </div>
+    );
+}
+
+// Wrap the ProfileContent with ProtectedRoute
+export default function ProfilePage() {
+    return (
+        <ProtectedRoute>
+            <ProfileContent />
+        </ProtectedRoute>
     );
 }

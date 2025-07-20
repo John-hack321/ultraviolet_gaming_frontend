@@ -8,10 +8,13 @@ export const signInSchema = z.object({
 )
 
 export const signUpSchema = z.object({
-    username : z.string().min(6, " the username must be of atlease 6 characters "),
-    email : z.string().email("invalid email"),
-    password : z.string().min(6, "please enter a password , must be atleast 6 characters"),
-})
+    username: z.string().min(6, "The username must be at least 6 characters"),
+    email: z.string().email("Invalid email"),
+    phone: z.string()
+        .min(10, "Phone number must be at least 10 digits")
+        .regex(/^[0-9]+$/, "Phone number must contain only numbers"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export const transactoinSchema = z.object({
     money : z.number().int().min(1 , {message : "amount must be a whole number greater than 0"})

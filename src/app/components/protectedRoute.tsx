@@ -25,7 +25,7 @@ const ProtectedRoute = ({children} : ProtectedRouteProps ) => { // so what this 
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
+            <div className="flex items-center justify-center bg-white h-screen">
             <svg
               className="animate-spin h-6 w-6  text-blue-500 mr-2"
               xmlns="http://www.w3.org/2000/svg"

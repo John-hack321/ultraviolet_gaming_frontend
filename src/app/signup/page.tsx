@@ -28,6 +28,7 @@ export default function SignUpPage(){
         defaultValues : {
             username : "",
             email : "",
+            phone : "",
             password : "",
         },
         mode : "onChange",
@@ -37,6 +38,7 @@ export default function SignUpPage(){
     const email = watch("email");
     const password = watch("password");
     const username = watch("username");
+    const phone = watch("phone");
 
     useEffect(() => {
         setIsFormValid(!!email && !!password); // so this functio inside here is ran everytime there is a chnage in the email and password fields , and with this ran each time it means that the button component will be rerendered each time in doing so 
@@ -45,7 +47,7 @@ export default function SignUpPage(){
     const onSubmit = async (data : SignUpFormValues) => {
         try{
             setIsLoading(true);
-            await signup(data.username , data.email , data.password);
+            await signup(data.username , data.email ,data.phone , data.password);
         }catch(error){
             console.log("error signing you up")
             throw error;
@@ -106,6 +108,22 @@ export default function SignUpPage(){
                                     {errors.email.message}
                                 </p>
                              )}                        </div>
+
+                        <div className = "mb-4">
+                            <label htmlFor="phone" className = "mb-1 block text-sm font-medium text-black">
+                                Phone
+                            </label>
+                            <input type="tel"
+                            id = "phone"
+                            {...register("phone")}
+                            placeholder="enter your phone number"
+                            className = "text-black focus:ring-black focus:ring-1 border-gray-600 placeholder:text-gray-500 placeholder:text-xs border w-full p-2 rounded-lg focus:outline-none"/>
+                            {errors.phone && (
+                                <p className = "text-xs text-red-500 mt-1">
+                                    {errors.phone.message}
+                                </p>
+                            )}
+                        </div>
                         <div className = 'mb-4 '>
                             <label htmlFor="password" className = 'mb-1 block text-sm font-medium text-black'>
                                 Password

@@ -1,7 +1,8 @@
 'use client'
 import NavBar from "../components/navBar"
+import ProtectedRoute from "../components/protectedRoute"
 
-export default function Dashboard() {
+function Dashboard() {
     return (
             <div className = "bg-white flex-col flex justify-between min-h-screen">
                 <div className = "" >
@@ -9,5 +10,13 @@ export default function Dashboard() {
                 </div>
                 <NavBar/>
             </div>
+    )
+}
+
+export default function DashboardPage () {
+    return (
+        <ProtectedRoute>
+            <Dashboard/>
+        </ProtectedRoute>
     )
 }
