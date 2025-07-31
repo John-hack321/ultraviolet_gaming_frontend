@@ -200,4 +200,3 @@ export default function SignUpPage(){
 
 // so i guess we are going to follow copilot's advise where we will only do the thing in a way such that we follow the common patterns 
 // if we encounter a difficult we use ai : and we will be done soon 
-

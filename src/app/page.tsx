@@ -1,5 +1,7 @@
-import Image from "next/image";
+import { Chess } from "chess.js"
 
 export default function Home() {
-  return <div>this is a test for this application</div>
+  return <div className = "min-h-screen bg-white">
+    <div className = "text-black">this is the test for the tech stack</div>
+  </div>
 }
