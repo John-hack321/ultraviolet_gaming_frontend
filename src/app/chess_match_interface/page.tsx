@@ -25,86 +25,73 @@ const UserData = {
 
 function chess_match_page() {
     return (
-        <div className = "min-h-screen bg-white flex flex-col gap-4 px-1">
+        <div className="min-h-screen bg-cover bg-center flex flex-col gap-4 px-1" style={{backgroundImage: "url('/dark_mapple.png')"}}>
             {/* the navbar part at the top */}
-            <div className = "text-black flex p-2 gap-4">
+            <div className = "text-white flex p-2 gap-4 items-center">
                 <Menu size = {26}/> {/* later on impement an onclick functionality for this where it changes to x when clicked */}
                 <h1 className = "text-lg font-bold tracking-wide">chess_matches</h1>
             </div>
             {/* opponent title and timer */}
-            <div className = " shadow shadow-gray-400 py-3 flex items-center justify-between pr-4">
-                <div className = "flex p-2 gap-2  itmes-center">
+            <div className = "bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg py-3 flex items-center justify-between pr-4">
+                <div className = "flex p-2 gap-2 items-center">
                     <ProfileIcon width={40}/>
                     <div className = "flex flex-col ">
-                        <h2 className ="text-black text-lg font-bold ">{OpponentData.username}</h2>
-                        <div className = "flex px-2 gap-2">
-                            <h2 className = "text-black font-medium">{OpponentData.ranking}</h2>
+                        <h2 className ="text-white text-lg font-bold ">{OpponentData.username}</h2>
+                        <div className = "flex px-2 gap-2 items-center">
+                            <h2 className = "text-white font-medium">{OpponentData.ranking}</h2>
                             <CountryFlagIcon code = {OpponentData.country_code} size={13}/>
                         </div>
                     </div>
                 </div>
-                {/* opponent timer : make this component reusable later on*/} 
+                {/* opponent timer : make this component reusable later on*/}
                 <div>
-                    <div className = "bg-gray-300 p-4 rouned-lg border border-gray-300">
-                        <h1 className = "text-black text-2xl font-bold">{OpponentData.time}</h1>
+                    <div className = "bg-yellow-950 bg-opacity-70 p-4 rounded-lg border border-gray-500">
+                        <h1 className = "text-white text-2xl font-bold">{OpponentData.time}</h1>
                     </div>
                 </div>
             </div>
             {/* the chessborad now  */}
-            <div className = "shadow shadow-gray-400">
+            <div className = "shadow-2xl">
                 <ChessGame/>
             </div>
             {/* native user status and time make this component reusable later on */}
-            <div className = "flex items-center shadow shadow-gray-400 justify-between pr-4">
-                <div className = "flex p-2 gap-2  itmes-center">
+            <div className = "bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg flex items-center justify-between pr-4">
+                <div className = "flex p-2 gap-2 items-center">
                     <ProfileIcon width={40}/>
                     <div className = "flex flex-col">
-                        <h2 className ="text-black text-lg font-bold  ">{UserData.username}</h2>
-                        <div className = "flex px-2 gap-2 ">
-                            <h2 className = "text-black font-medium">{UserData.ranking}</h2>
+                        <h2 className ="text-white text-lg font-bold  ">{UserData.username}</h2>
+                        <div className = "flex px-2 gap-2 items-center">
+                            <h2 className = "text-white font-medium">{UserData.ranking}</h2>
                             <CountryFlagIcon code = {UserData.country_code} size={13}/>
                         </div>
                     </div>
                 </div>
-                {/* opponent timer : make this component reusable later on*/} 
+                {/* opponent timer : make this component reusable later on*/}
                 <div>
-                    <div className = "bg-gray-300 p-4 rouned-lg border border-gray-300">
-                        <h1 className = "text-black text-2xl font-bold">{OpponentData.time}</h1>
+                    <div className = "bg-yellow-950 bg-opacity-70 p-4 rounded-lg border border-gray-500">
+                        <h1 className = "text-white text-2xl font-bold">{UserData.time}</h1>
                     </div>
                 </div>
             </div>
             {/* the other button for different stuff */}
             <div className = "flex flex-col gap-4">
                 {/* first two buttons */}
-                <div className = "flex p-3 gap-4 w-full shadow shadow-gray-400 py-2">
-                    <button className = "text-black bg-gray-600 p-2 text-sm rounded-lg items-center w-1/2 ">Play New Game</button>
-                    <button className = "text-black bg-gray-600 p-2 text-sm rounded-lg items-center w-1/2"><ProfileIcon width={12}/>FindPlayers</button>
+                <div className = "flex p-3 gap-4 w-full bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg py-2">
+                    <button className = "text-white bg-yellow-900 hover:bg-yellow-800 p-2 text-sm rounded-lg items-center w-1/2 ">Play New Game</button>
+                    <button className = "text-white bg-yellow-900 hover:bg-yellow-800 p-2 text-sm rounded-lg items-center w-1/2 flex justify-center gap-2"><ProfileIcon width={12}/>FindPlayers</button>
                 </div>
                 {/* the big button */}
-                <div className = "w-full px-3 shadow shadow-gray-400">
-                    <button className = "w-full rounded-lg bg-neutral-600 p-2 flex flex-col">
-                        <span className='text-black'>Game type</span>
-                        <span className = "text-green-500">Rapid <span className='text-white text-sm'>10 minute game</span></span>
+                <div className = "w-full px-3">
+                    <button className = "w-full rounded-lg bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg p-2 flex flex-col">
+                        <span className='text-gray-300'>Game type</span>
+                        <span className = "text-green-400">Rapid <span className='text-gray-200 text-sm'>10 minute game</span></span>
                     </button>
                 </div>
                 {/* next two buttons */}
-                <div className = "w-full px-3 mt-2 flex gap-4 shadow text-shadow-gray-400">
-                    <button className='text-black bg-neutral-600 w-1/2 p-2 rounded-lg'>Play a friend</button>
-                    <button className = "text-black rounded-lg w-1/2 bg-neutral-600 px-2 py-4">Tournaments</button>
+                <div className = "w-full px-3 mt-2 flex gap-4">
+                    <button className='text-white bg-yellow-900 hover:bg-yellow-800 w-1/2 p-2 rounded-lg'>Play a friend</button>
+                    <button className = "text-white rounded-lg w-1/2 bg-yellow-900 hover:bg-yellow-800 px-2 py-4">Tournaments</button>
                 </div>
-            </div>
-            {/* profile thingy at the bottom */}
-            <div className = "">
-                <div className = "flex p-2 gap-2  itmes-center">
-                        <ProfileIcon width={40}/>
-                        <div className = "flex flex-col bg-red-200">
-                            <h2 className ="text-green-900 text-sm font-bold bg-blue-400 ">Online</h2>
-                            <div className = "flex px-2 gap-2 bg-yellow-300">
-                                <h2 className = "text-black font-medium">2000  online</h2>
-                                <CountryFlagIcon code = {UserData.country_code} size={13}/>
-                            </div>
-                        </div>
-                    </div>
             </div>
         </div>
     )
