@@ -16,23 +16,66 @@ type Square =
   | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
 export default function ChessGame() {
-  const [game] = useState(new Chess()); // this defines the board state in string format 
+  // const [game] = useState(new Chess()); // this defines the board state in string format // but we now need to make it mutable for proper updating of the game state and all .
+  const [game , setGame] = useState(new Chess())
   const [position, setPosition] = useState(game.fen()); // this returns the board state but now in the fen format 
 
   // below we use move which is a function provided by the chess.js library as we had intantiated game from chess here : => const [game] = useState(new chess()) : and bytheway this game varibale is imutable as it does not give a setgame method 
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-    const move = game.move({
-      from: sourceSquare,
-      to: targetSquare,
-      promotion: 'q',
-    });
-    console.log('you have just move a chesspeice')
-    console.log(move)
 
-    if (move === null) return false;
-    setPosition(game.fen());
-    return true;
+    // im being advised for better state management i should use a copy of the game and only update when a move is valid 
+
+    const gameCopy = new Chess(game.fen())
+
+    try {
+      console.log('you have just called the gameCopy function')
+      const move = gameCopy.move({
+        from : sourceSquare,
+        to : targetSquare,
+        promotion : 'q',
+      })
+
+      console.log('you are trying to move the chesspeice from sourcesquare to targetsquare')
+      console.log(`move object : ${move}`)
+
+      if (move === null) {
+        console.log(`invalid attempt to move peice from ${sourceSquare} to ${targetSquare}`)
+        return false;
+      }
+
+      setGame(gameCopy)
+      setPosition(gameCopy.fen())
+
+      console.log('that was a valid move')
+      console.log(`the current position is now ${position}`)
+
+      if (gameCopy.isCheckmate()){
+        console.log('checkmate'); // we will setup this reset game in a better way soon
+        resetGame()
+      }else if (gameCopy.isDraw()){
+        console.log('the game has ended in a draw')
+        resetGame() // we will setup this reset game in a better way soon
+      }else if (gameCopy.isCheck()){
+        console.log('check!')
+      }
+
+      return true;
+
+    }
+    catch(error){
+      console.log('there was an error doing the move operartion : ' , error)
+      return false;
+    }
+   
   };
+
+  { /* this reset game function is good when testing so lets just put it here i will find its use later on */}
+  const resetGame = () => {
+    const newGame = new Chess()
+    setGame(newGame);
+    setPosition(newGame.fen());
+    console.log('the game has succesfuly been reset')
+  }
 
   // Custom square styles for wooden texture
   const customSquareStyles: { [key: string]: CSSProperties } = {};
@@ -48,8 +91,8 @@ export default function ChessGame() {
 
       customSquareStyles[square] = {
         backgroundImage: isLight
-          ? 'url("/light_mapple.png")'
-          : 'url("/dark_mapple.png")',
+          ? '/light_mapple.png'
+          : '/dark_mapple.png',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -94,8 +137,16 @@ export default function ChessGame() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4">
+      <p className = "text-sm font-bold">
+        Turn : {game.turn() === 'w' ? 'white' : 'black'}
+      </p>
       {/* @ts-ignore - Temporary workaround for type issues */}
       <ReactChessboard {...chessboardProps} />
+      <button 
+      className = "rounded-lg p-2 bg-yellow-900 mt-4"
+      onClick={resetGame}>
+        ResetGame
+      </button>
     </div>
   );
 }
