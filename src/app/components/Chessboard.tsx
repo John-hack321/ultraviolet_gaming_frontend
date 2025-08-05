@@ -1,7 +1,7 @@
 'use client';
 import { useState, CSSProperties } from 'react';
 import { Chess } from 'chess.js';
-import { Chessboard } from 'react-chessboard';
+import { Chessboard as ReactChessboard } from 'react-chessboard';
 import './Chessboard.css';
 
 type Square =
@@ -54,8 +54,8 @@ export default function ChessGame() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4">
-      <Chessboard
-        fen={position}
+      <ReactChessboard
+        position={position}
         onPieceDrop={onDrop}
         boardWidth={
           Math.min(
