@@ -16,72 +16,70 @@ type Square =
   | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
 export default function ChessGame() {
-  // const [game] = useState(new Chess()); // this defines the board state in string format // but we now need to make it mutable for proper updating of the game state and all .
-  const [game , setGame] = useState(new Chess())
+  const [game, setGame] = useState(new Chess())
   const [position, setPosition] = useState(game.fen()); // this returns the board state but now in the fen format 
 
-  // below we use move which is a function provided by the chess.js library as we had intantiated game from chess here : => const [game] = useState(new chess()) : and bytheway this game varibale is imutable as it does not give a setgame method 
+  // Fixed onDrop function with proper state management
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-
-    // im being advised for better state management i should use a copy of the game and only update when a move is valid 
-
+    // Create a copy of the current game state
     const gameCopy = new Chess(game.fen())
 
     try {
-      console.log('you have just called the gameCopy function')
+      console.log(`Attempting move from ${sourceSquare} to ${targetSquare}`)
+      
       const move = gameCopy.move({
-        from : sourceSquare,
-        to : targetSquare,
-        promotion : 'q',
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: 'q', // Always promote to queen for simplicity
       })
 
-      console.log('you are trying to move the chesspeice from sourcesquare to targetsquare')
-      console.log(`move object : ${move}`)
-
+      // If move is invalid, return false
       if (move === null) {
-        console.log(`invalid attempt to move peice from ${sourceSquare} to ${targetSquare}`)
+        console.log(`Invalid move attempt from ${sourceSquare} to ${targetSquare}`)
         return false;
       }
 
-      setGame(gameCopy)
-      setPosition(gameCopy.fen())
+      // Move was successful, update both game and position state
+      const newPosition = gameCopy.fen();
+      setGame(gameCopy);
+      setPosition(newPosition);
 
-      console.log('that was a valid move')
-      console.log(`the current position is now ${position}`)
+      console.log('Valid move executed!')
+      console.log(`New position: ${newPosition}`)
+      console.log(`Move details:`, move)
 
-      if (gameCopy.isCheckmate()){
-        console.log('checkmate'); // we will setup this reset game in a better way soon
-        resetGame()
-      }else if (gameCopy.isDraw()){
-        console.log('the game has ended in a draw')
-        resetGame() // we will setup this reset game in a better way soon
-      }else if (gameCopy.isCheck()){
-        console.log('check!')
+      // Check for game ending conditions
+      if (gameCopy.isCheckmate()) {
+        console.log('Checkmate!');
+        // You might want to show a modal or alert here instead of immediately resetting
+        setTimeout(() => resetGame(), 2000); // Give players time to see the checkmate
+      } else if (gameCopy.isDraw()) {
+        console.log('Game ended in a draw')
+        setTimeout(() => resetGame(), 2000);
+      } else if (gameCopy.isCheck()) {
+        console.log('Check!')
       }
 
       return true;
 
-    }
-    catch(error){
-      console.log('there was an error doing the move operartion : ' , error)
+    } catch (error) {
+      console.error('Error executing move:', error)
       return false;
     }
-   
   };
 
-  { /* this reset game function is good when testing so lets just put it here i will find its use later on */}
+  // Reset game function
   const resetGame = () => {
     const newGame = new Chess()
     setGame(newGame);
     setPosition(newGame.fen());
-    console.log('the game has succesfuly been reset')
+    console.log('Game has been successfully reset')
   }
 
   // Custom square styles for wooden texture
   const customSquareStyles: { [key: string]: CSSProperties } = {};
 
   // Generate styles for all squares
-  // this here is just for the custom squares what we are trying to do is to iterate throught the squares and applie the relevant styles 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       const file = String.fromCharCode(97 + j); // a-h
@@ -91,8 +89,8 @@ export default function ChessGame() {
 
       customSquareStyles[square] = {
         backgroundImage: isLight
-          ? '/light_mapple.png'
-          : '/dark_mapple.png',
+          ? 'url(/light_mapple.png)'
+          : 'url(/dark_mapple.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -101,9 +99,8 @@ export default function ChessGame() {
   }
 
   // Chessboard props with proper typing
-  // and down here we just have the chess-board props that are required by the chessboard for functionality and styling 
   const chessboardProps = {
-    position: position,
+    position: position, // This should now update correctly
     onPieceDrop: onDrop,
     boardWidth: Math.min(
       typeof window !== 'undefined' ? window.innerWidth - 32 : 400,
@@ -137,15 +134,23 @@ export default function ChessGame() {
 
   return (
     <div className="w-full max-w-md mx-auto p-4">
-      <p className = "text-sm font-bold">
-        Turn : {game.turn() === 'w' ? 'white' : 'black'}
-      </p>
+      <div className="mb-2 text-white">
+        <p className="text-sm font-bold">
+          Turn: {game.turn() === 'w' ? 'White' : 'Black'}
+        </p>
+        <p className="text-xs text-gray-300">
+          Position: {position.split(' ')[0]} {/* Show just the piece positions part of FEN */}
+        </p>
+      </div>
+      
       {/* @ts-ignore - Temporary workaround for type issues */}
       <ReactChessboard {...chessboardProps} />
+      
       <button 
-      className = "rounded-lg p-2 bg-yellow-900 mt-4"
-      onClick={resetGame}>
-        ResetGame
+        className="rounded-lg p-2 bg-yellow-900 hover:bg-yellow-800 text-white mt-4 w-full transition-colors"
+        onClick={resetGame}
+      >
+        Reset Game
       </button>
     </div>
   );
