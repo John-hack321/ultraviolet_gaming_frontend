@@ -4,7 +4,8 @@ import { Chess } from 'chess.js';
 import { Chessboard as ReactChessboard } from 'react-chessboard';
 import './Chessboard.css';
 
-type Square =
+{/* this is the type for the chess board its a typescript union type that represents each square with a */}
+type Square = 
   | 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8'
   | 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8'
   | 'c1' | 'c2' | 'c3' | 'c4' | 'c5' | 'c6' | 'c7' | 'c8'
@@ -15,15 +16,18 @@ type Square =
   | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
 export default function ChessGame() {
-  const [game] = useState(new Chess());
-  const [position, setPosition] = useState(game.fen());
+  const [game] = useState(new Chess()); // this defines the board state in string format 
+  const [position, setPosition] = useState(game.fen()); // this returns the board state but now in the fen format 
 
+  // below we use move which is a function provided by the chess.js library as we had intantiated game from chess here : => const [game] = useState(new chess()) : and bytheway this game varibale is imutable as it does not give a setgame method 
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
     const move = game.move({
       from: sourceSquare,
       to: targetSquare,
       promotion: 'q',
     });
+    console.log('you have just move a chesspeice')
+    console.log(move)
 
     if (move === null) return false;
     setPosition(game.fen());
@@ -34,6 +38,7 @@ export default function ChessGame() {
   const customSquareStyles: { [key: string]: CSSProperties } = {};
 
   // Generate styles for all squares
+  // this here is just for the custom squares what we are trying to do is to iterate throught the squares and applie the relevant styles 
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       const file = String.fromCharCode(97 + j); // a-h
@@ -53,6 +58,7 @@ export default function ChessGame() {
   }
 
   // Chessboard props with proper typing
+  // and down here we just have the chess-board props that are required by the chessboard for functionality and styling 
   const chessboardProps = {
     position: position,
     onPieceDrop: onDrop,
