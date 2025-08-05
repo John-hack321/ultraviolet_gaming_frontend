@@ -16,65 +16,61 @@ type Square =
   | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
 export default function ChessGame() {
-  const [game, setGame] = useState(new Chess())
-  const [position, setPosition] = useState(game.fen()); // this returns the board state but now in the fen format 
+  const [game, setGame] = useState(new Chess());
 
   // Fixed onDrop function with proper state management
   const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
     // Create a copy of the current game state
-    const gameCopy = new Chess(game.fen())
+    const gameCopy = new Chess(game.fen());
 
     try {
-      console.log(`Attempting move from ${sourceSquare} to ${targetSquare}`)
+      console.log(`Attempting move from ${sourceSquare} to ${targetSquare}`);
       
       const move = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
         promotion: 'q', // Always promote to queen for simplicity
-      })
+      });
 
-      // If move is invalid, return false
+      // If move is invalid, return false (piece will snap back)
       if (move === null) {
-        console.log(`Invalid move attempt from ${sourceSquare} to ${targetSquare}`)
+        console.log(`Invalid move attempt from ${sourceSquare} to ${targetSquare}`);
         return false;
       }
 
-      // Move was successful, update both game and position state
-      const newPosition = gameCopy.fen();
+      // Move was successful, update the game state
+      // This is the key fix - we update the game state which will trigger a re-render
       setGame(gameCopy);
-      setPosition(newPosition);
 
-      console.log('Valid move executed!')
-      console.log(`New position: ${newPosition}`)
-      console.log(`Move details:`, move)
+      console.log('Valid move executed!');
+      console.log(`New position: ${gameCopy.fen()}`);
+      console.log(`Move details:`, move);
 
       // Check for game ending conditions
       if (gameCopy.isCheckmate()) {
         console.log('Checkmate!');
-        // You might want to show a modal or alert here instead of immediately resetting
         setTimeout(() => resetGame(), 2000); // Give players time to see the checkmate
       } else if (gameCopy.isDraw()) {
-        console.log('Game ended in a draw')
+        console.log('Game ended in a draw');
         setTimeout(() => resetGame(), 2000);
       } else if (gameCopy.isCheck()) {
-        console.log('Check!')
+        console.log('Check!');
       }
 
       return true;
 
     } catch (error) {
-      console.error('Error executing move:', error)
+      console.error('Error executing move:', error);
       return false;
     }
   };
 
   // Reset game function
   const resetGame = () => {
-    const newGame = new Chess()
+    const newGame = new Chess();
     setGame(newGame);
-    setPosition(newGame.fen());
-    console.log('Game has been successfully reset')
-  }
+    console.log('Game has been successfully reset');
+  };
 
   // Custom square styles for wooden texture
   const customSquareStyles: { [key: string]: CSSProperties } = {};
@@ -100,7 +96,7 @@ export default function ChessGame() {
 
   // Chessboard props with proper typing
   const chessboardProps = {
-    position: position, // This should now update correctly
+    position: game.fen(), // Use game.fen() directly instead of separate position state
     onPieceDrop: onDrop,
     boardWidth: Math.min(
       typeof window !== 'undefined' ? window.innerWidth - 32 : 400,
@@ -139,7 +135,7 @@ export default function ChessGame() {
           Turn: {game.turn() === 'w' ? 'White' : 'Black'}
         </p>
         <p className="text-xs text-gray-300">
-          Position: {position.split(' ')[0]} {/* Show just the piece positions part of FEN */}
+          Position: {game.fen().split(' ')[0]} {/* Show just the piece positions part of FEN */}
         </p>
       </div>
       
