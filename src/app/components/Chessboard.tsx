@@ -69,8 +69,8 @@ export default function chessGame () {
     // loop through the moves to and set the options squares
     for (const move of moves ) {
       newSquares[move.to] = {
-        background: chessGame.get(move.to) && chessGame.get(move.to)?.color !== chessGame.get(square)?.color ? 'radial-gradient(circle, rgba(0,0,0,.1) 85%, transparent 85%)' // larger circle for capturing
-          : 'radial-gradient(circle, rgba(0,0,0,.1) 25%, transparent 25%)',
+        background: chessGame.get(move.to) && chessGame.get(move.to)?.color !== chessGame.get(square)?.color ? 'radial-gradient(circle, rgba(0, 128, 0, 0.5) 85%, transparent 85%)' // larger circle for capturing
+          : 'radial-gradient(circle, rgba(0, 128, 0, 0.5) 25%, transparent 25%)',
           // smaller circle for moving
           borderRadius : '50%'
       };
