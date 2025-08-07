@@ -1,153 +1,83 @@
 'use client';
-import { useState, CSSProperties } from 'react';
-import { Chess } from 'chess.js';
-import { Chessboard as ReactChessboard } from 'react-chessboard';
-import './Chessboard.css';
+import { useRef , useState } from "react";
+import { Chess } from "chess.js";
+import { Chessboard , PieceDropHandlerArgs } from "react-chessboard";
 
-{/* this is the type for the chess board its a typescript union type that represents each square with a */}
-type Square = 
-  | 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8'
-  | 'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8'
-  | 'c1' | 'c2' | 'c3' | 'c4' | 'c5' | 'c6' | 'c7' | 'c8'
-  | 'd1' | 'd2' | 'd3' | 'd4' | 'd5' | 'd6' | 'd7' | 'd8'
-  | 'e1' | 'e2' | 'e3' | 'e4' | 'e5' | 'e6' | 'e7' | 'e8'
-  | 'f1' | 'f2' | 'f3' | 'f4' | 'f5' | 'f6' | 'f7' | 'f8'
-  | 'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6' | 'g7' | 'g8'
-  | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
+export default function chessGame () {
 
-export default function ChessGame() {
-  const [game, setGame] = useState(new Chess());
+  // make the chessgame use useRef from react to always get the latest game state
 
-  // Fixed onDrop function with proper state management
-  const onDrop = (sourceSquare: Square, targetSquare: Square): boolean => {
-    // Create a copy of the current game state
-    const gameCopy = new Chess(game.fen());
+  const chessGameRef = useRef(new Chess());
+  const chessGame = chessGameRef.current;
 
-    try {
-      console.log(`Attempting move from ${sourceSquare} to ${targetSquare}`);
-      
-      const move = gameCopy.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: 'q', // Always promote to queen for simplicity
-      });
+  // we then  setup somthing to track the positon of the chesspeices using useState(
 
-      // If move is invalid, return false (piece will snap back)
-      if (move === null) {
-        console.log(`Invalid move attempt from ${sourceSquare} to ${targetSquare}`);
-        return false;
-      }
+  const [chessPosition , setChessPosition] = useState(chessGame.fen())
 
-      // Move was successful, update the game state
-      // This is the key fix - we update the game state which will trigger a re-render
-      setGame(gameCopy);
+  // for now we are going to create automated chess for the opponent 
+  const oponent = ""; // for now we will leave it blank and add more functionality later on
 
-      console.log('Valid move executed!');
-      console.log(`New position: ${gameCopy.fen()}`);
-      console.log(`Move details:`, move);
-
-      // Check for game ending conditions
-      if (gameCopy.isCheckmate()) {
-        console.log('Checkmate!');
-        setTimeout(() => resetGame(), 2000); // Give players time to see the checkmate
-      } else if (gameCopy.isDraw()) {
-        console.log('Game ended in a draw');
-        setTimeout(() => resetGame(), 2000);
-      } else if (gameCopy.isCheck()) {
-        console.log('Check!');
-      }
-
-      return true;
-
-    } catch (error) {
-      console.error('Error executing move:', error);
-      return false;
+  // for the opponet random move 
+  // for now we will use this simple one later on we will use advances such as using the stockfish api
+  function makerandomMove() {
+    const possibleMoves = chessGame.moves();
+    // if chessgame is over finish game
+    if (chessGame.isGameOver()) {
+      return ;
     }
-  };
+    const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
 
-  // Reset game function
-  const resetGame = () => {
-    const newGame = new Chess();
-    setGame(newGame);
-    console.log('Game has been successfully reset');
-  };
+    // we then make that random move
+    chessGame.move(randomMove)
 
-  // Custom square styles for wooden texture
-  const customSquareStyles: { [key: string]: CSSProperties } = {};
+    // after moving the chesspeice we update the board state
+    setChessPosition(chessGame.fen())
 
-  // Generate styles for all squares
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      const file = String.fromCharCode(97 + j); // a-h
-      const rank = 8 - i; // 8-1
-      const square = `${file}${rank}` as Square;
-      const isLight = (i + j) % 2 === 0;
-
-      customSquareStyles[square] = {
-        backgroundImage: isLight
-          ? 'url(/light_mapple.png)'
-          : 'url(/dark_mapple.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      };
-    }
   }
 
-  // Chessboard props with proper typing
-  const chessboardProps = {
-    position: game.fen(), // Use game.fen() directly instead of separate position state
-    onPieceDrop: onDrop,
-    boardWidth: Math.min(
-      typeof window !== 'undefined' ? window.innerWidth - 32 : 400,
-      400
-    ),
-    customSquareStyles: customSquareStyles,
-    customBoardStyle: {
-      borderRadius: '8px',
-      boxShadow: '0 8px 32px rgba(101, 67, 33, 0.3)',
-    },
-    customLightSquareStyle: {
-      backgroundImage: 'url("/light_mapple.png")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    },
-    customDarkSquareStyle: {
-      backgroundImage: 'url("/dark_mapple.png")',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-    },
-    areArrowsAllowed: true,
-    arrowColor: "rgba(255, 255, 0, 0.8)",
-    boardOrientation: "white" as const,
-    showBoardNotation: true,
-    customNotationStyle: {
-      color: '#654321',
-      fontWeight: 'bold' as const,
-      fontSize: '12px',
-    },
-  };
+  // and now the onDrop prop piece handler
+  function onPieceDrop({sourceSquare , targetSquare} : PieceDropHandlerArgs) {
+    // prevent bad move such as moving a peice offbaord
+    if (!targetSquare) {
+      return false;
+    }
+    
+    try {
+      chessGame.move({
+        from : sourceSquare,
+        to : targetSquare ,
+        promotion : 'q', // as said before for simplicity we now promote to queen first
+      })
 
+      // upon a successful move we set the update the chessgame status as always 
+      setChessPosition(chessGame.fen());
+
+      // we then make the random oponent move
+      setTimeout(makerandomMove,500 ) // we use the timeout to make the random move appear after some delay not just instant 
+
+      // return true 
+      return true;
+
+
+    }catch (error) {
+      console.log(`an error occured : ${error}`)
+      return false;
+    };
+
+  }
+
+     // create the props to pass the react-chessboard component
+     const chessboardOptions = {
+      position : chessPosition,
+      onPieceDrop,
+      id : 'play-vs-random'
+    }
+
+    // and just like that i belive we will have create a fully functinal chessboard
+    
   return (
-    <div className="w-full max-w-md mx-auto p-4">
-      <div className="mb-2 text-white">
-        <p className="text-sm font-bold">
-          Turn: {game.turn() === 'w' ? 'White' : 'Black'}
-        </p>
-        <p className="text-xs text-gray-300">
-          Position: {game.fen().split(' ')[0]} {/* Show just the piece positions part of FEN */}
-        </p>
-      </div>
-      
-      {/* @ts-ignore - Temporary workaround for type issues */}
-      <ReactChessboard {...chessboardProps} />
-      
-      <button 
-        className="rounded-lg p-2 bg-yellow-900 hover:bg-yellow-800 text-white mt-4 w-full transition-colors"
-        onClick={resetGame}
-      >
-        Reset Game
-      </button>
+    <div>
+      <Chessboard options = {chessboardOptions}/>
     </div>
-  );
+  )
 }
