@@ -195,7 +195,7 @@ export default function chessGame () {
       onSquareClick,
       position : chessPosition,
       squareStyles: optionSquares,
-      id : 'play-vs-random : on_drag/on_piecedrop version'
+      id: 'play-vs-random-drag-drop' // note when wrirint css selectors avoid spaces to avoid making them selectors 
     }
 
     // and just like that i belive we will have create a fully functinal chessboard
