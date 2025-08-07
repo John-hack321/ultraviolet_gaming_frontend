@@ -49,6 +49,9 @@ export default function chessGame () {
   // a function for getting the valid moves for a squeare
 
   function getMoveOpetions (square : Square) {
+    /*
+    from what I think i know so far I think this function is for getthing the possible moves that a user can have and highlighting them on the board
+    */
     const moves = chessGame.moves({
       square,
       verbose : true,
@@ -96,9 +99,64 @@ export default function chessGame () {
       }
 
       return;
-      
+
     }
+
+    // checking if the square clicked to move to is a valid move
+    const moves = chessGame.moves({
+      square : moveFrom as Square,
+      verbose : true,
+    });
+
+    const foundMove = moves.find(m => m.from && m.to === square);
+
+    // if its not a valid move 
+    if (!foundMove) {
+      // check if clicked on a new place
+      const hasMoveOptions = getMoveOpetions(square as Square);
+
+      // if new piece , setMoveFrom , otherwise cleare moveFrom
+      setMoveFrom(hasMoveOptions ? square : '');
+
+      // return early
+      return;
+
+    }
+     // is normal move
+    try {
+      chessGame.move({
+        from : moveFrom,
+        to : square,
+        promotion : 'q',
+      });
+    }catch (error) {
+      console.log(`an error occured : ${error}`)
+
+      // if invalid getMove and setMoveOptions
+      const hasMoveOptions = getMoveOpetions(square as Square)
+
+      // if new piece , setMoveFrom otherwhise clear MoveFrom
+      if (hasMoveOptions) {
+        setMoveFrom(square);
+      }
+
+      return;
   }
+
+  // update the board position
+  setChessPosition(chessGame.fen())
+
+  // make a reandom cpu move i believe for the opponent part
+
+  setTimeout(makerandomMove , 300);
+
+  // then clear moveFrom and optionSquare
+  setMoveFrom('');
+  setOptionSquares({});
+
+  }
+
+ 
 
   // and now the onDrop prop piece handler
   function onPieceDrop({sourceSquare , targetSquare} : PieceDropHandlerArgs) {
@@ -133,9 +191,11 @@ export default function chessGame () {
 
      // create the props to pass the react-chessboard component
      const chessboardOptions = {
-      position : chessPosition,
       onPieceDrop,
-      id : 'play-vs-random'
+      onSquareClick,
+      position : chessPosition,
+      squareStyles: optionSquares,
+      id : 'play-vs-random : on_drag/on_piecedrop version'
     }
 
     // and just like that i belive we will have create a fully functinal chessboard
