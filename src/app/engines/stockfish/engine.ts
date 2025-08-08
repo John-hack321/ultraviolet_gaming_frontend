@@ -7,8 +7,20 @@
  * Description of the universal chess interface (UCI)  https://gist.github.com/aliostad/f4470274f39d29b788c1b09519e67372/
  */
 
-// Use relative path from root
+console.log('Initializing Stockfish worker...');
 const stockfish = new Worker('/stockfish.wasm.js');
+
+// Debug worker events
+stockfish.onmessage = (e) => {
+  console.log('Worker message:', e.data);
+  if (typeof e.data === 'string' && e.data.includes('uciok')) {
+    console.log('Stockfish UCI initialized successfully!');
+  }
+};
+
+stockfish.onerror = (error) => {
+  console.error('Worker error:', error);
+};
 
 type EngineMessage = {
   /** stockfish engine message in UCI format*/
