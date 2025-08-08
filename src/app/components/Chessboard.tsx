@@ -203,7 +203,20 @@ export default function chessGame () {
   setTimeout(makerandomMove , 300);
 
   }
-  
+
+  // lets implement the functionality for only dragging a particular piece type 
+  // allow white to only drag white pieces
+
+  function canDragPieceWhite({piece} : PieceDropHandlerArgs) {
+    return piece.pieceType[0] === 'w';
+  }
+
+  // and now for the black dragging functionality
+
+  function canDragPieceBlack({piece} : PieceDropHandlerArgs) {
+    return piece.pieceType[0] === 'b';
+  }
+
   // and now the onDrop prop piece handler
   function onPieceDrop({sourceSquare , targetSquare} : PieceDropHandlerArgs) {
     // prevent bad move such as moving a peice offbaord
@@ -267,7 +280,42 @@ export default function chessGame () {
       */}
 
   // new chessboard options 
-  const chessboardOptions = {
+
+  // we are now going to create chessboard options for both white and black perspectives
+  // this is for the white peices
+  const whiteChessboardOptions = {
+    arrows: bestMove ? [{
+      startSquare: bestMove.substring(0, 2) as Square,
+      endSquare: bestMove.substring(2, 4) as Square,
+      color: 'rgb(0, 128, 0)'
+    }] : undefined,
+    canDragPiece : canDragPieceWhite,
+    onSquareClick,
+    position: chessPosition,
+    squareStyles : optionSquares,
+    boardOrientation : 'white' as const,
+    onPieceDrop,
+    id: 'multiplayer-white'
+  };
+
+   // now the same but now for the black pieces
+  const blackChessboardOptions = {
+    arrows: bestMove ? [{
+      startSquare: bestMove.substring(0, 2) as Square,
+      endSquare: bestMove.substring(2, 4) as Square,
+      color: 'rgb(0, 128, 0)'
+    }] : undefined,
+    canDragPiece : canDragPieceBlack,
+    onSquareClick,
+    position: chessPosition,
+    squareStyles : optionSquares,
+    boardOrientation : 'black' as const,
+    onPieceDrop,
+    id: 'multiplayer-black'
+  };
+ 
+  {/* this is comented for now as it is for the other chessboard implementation
+    const chessboardOptions = {
     arrows: bestMove ? [{
       startSquare: bestMove.substring(0, 2) as Square,
       endSquare: bestMove.substring(2, 4) as Square,
@@ -279,6 +327,7 @@ export default function chessGame () {
     onPieceDrop,
     id: 'analysis-board'
   };
+     */}
 
     // and just like that i belive we will have create a fully functinal chessboard
 
@@ -292,7 +341,7 @@ export default function chessGame () {
         <div>
           Best line : <i>{bestLine.slice(0, 40)}</i>...
         </div>
-        <Chessboard options = {chessboardOptions}/>
+        <Chessboard options = {whiteChessboardOptions}/>
       </div>
     </div>
   )
