@@ -196,16 +196,14 @@ export default function chessGame () {
 
   // make a reandom cpu move i believe for the opponent part
 
-  setTimeout(makerandomMove , 300);
-
   // then clear moveFrom and optionSquare
   setMoveFrom('');
   setOptionSquares({});
 
+  setTimeout(makerandomMove , 300);
+
   }
-
- 
-
+  
   // and now the onDrop prop piece handler
   function onPieceDrop({sourceSquare , targetSquare} : PieceDropHandlerArgs) {
     // prevent bad move such as moving a peice offbaord
