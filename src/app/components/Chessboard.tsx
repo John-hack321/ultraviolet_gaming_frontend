@@ -203,9 +203,10 @@ export default function chessGame () {
   return (
     <div>
       <Chessboard options = {chessboardOptions}/>
+      <div></div>
     </div>
+    
   )
 }
-
-
+// testing the master branch
 // implementing the onClick functinality for the squares 
