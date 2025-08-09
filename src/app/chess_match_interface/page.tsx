@@ -1,9 +1,14 @@
 'use client'
-import {Menu} from 'lucide-react'
+import {CheckSquare2Icon, Menu} from 'lucide-react'
 
+import { useEffect, useState } from 'react';
+
+import ChessGame from '../components/Chessboard'
 import ProfileIcon from '../components/profileIcon';
 import CountryFlagIcon from '../components/flagIcons';
-import ChessGame from '../components/Chessboard'
+import { UserProfileResponse } from '../api/users';
+import ProtectedRoute from '../components/protectedRoute';
+
 
 
 // for now we will hard code the opponent data and change this once we move to production
@@ -23,7 +28,25 @@ const UserData = {
 
 
 
-function chess_match_page() {
+function ChessMatch() {
+
+    // define data points for storing states and data here
+    const [userData , setUserData] = useState<UserProfileResponse | null>(null) // default to null for before loading
+    const [loading , setLoading] = useState(false)
+
+    useEffect(() => {
+        setLoading(true);
+        setLoading(false);
+        },[])
+
+    if (loading) {
+        return(
+            <div className = 'min-h-screen bg-white'>
+                <div className = "text-black font-bold">loading</div>
+            </div>
+        )
+    }
+
     return (
         <div className="min-h-screen bg-cover bg-center flex flex-col gap-4 px-1" style={{backgroundImage: "url('/dark_mapple.png')"}}>
             {/* the navbar part at the top */}
@@ -97,4 +120,11 @@ function chess_match_page() {
     )
 }
 
-export default chess_match_page;
+export default function ChessMatchPage() {
+    return (
+        <ProtectedRoute>
+            <ChessMatch/>
+        </ProtectedRoute>
+    )
+}
+// note : in typescript tsx all componet names must start with an uppercase letter

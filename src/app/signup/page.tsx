@@ -8,9 +8,13 @@ import { useAuth } from "../context/authContext";
 
 import { useForm } from 'react-hook-form';
 
-
-
 export default function SignUpPage(){
+
+    //debug log
+    console.log(`the signup page has been rendered fully again`)
+
+    // implementing foreing username input
+    const [iHaveForeignChessAccount , setIHaveForeignChessAccount ] = useState(false)
 
     const [isLoading , setIsLoading] = useState(false);
     const [isFormValid , setIsFormValid] = useState(false);
@@ -27,6 +31,7 @@ export default function SignUpPage(){
         resolver: zodResolver(signUpSchema),
         defaultValues : {
             username : "",
+            chessDotComUsername : "",
             email : "",
             phone : "",
             password : "",
@@ -38,21 +43,52 @@ export default function SignUpPage(){
     const email = watch("email");
     const password = watch("password");
     const username = watch("username");
+    const chessDotComUsername = watch("chessDotComUsername")
     const phone = watch("phone");
 
     useEffect(() => {
-        setIsFormValid(!!email && !!password); // so this functio inside here is ran everytime there is a chnage in the email and password fields , and with this ran each time it means that the button component will be rerendered each time in doing so 
-    }, [email , password]);
+        // Form is valid if we have email, password, and at least one of username or chessDotComUsername
+        const hasUsername = username?.trim() !== '';
+        const hasChessUsername = chessDotComUsername?.trim() !== '';
+        const hasRequiredFields = !!email && !!password && (hasUsername || hasChessUsername);
+        
+        setIsFormValid(hasRequiredFields);
+    }, [email, password, username, chessDotComUsername]);
 
-    const onSubmit = async (data : SignUpFormValues) => {
-        try{
+    const onSubmit = async (data: SignUpFormValues) => {
+        try {
+            console.log('Form submitted with data:', data);
             setIsLoading(true);
-            await signup(data.username , data.email ,data.phone , data.password);
-        }catch(error){
-            console.log("error signing you up")
-            throw error;
-        }finally{
-            setIsLoading(false)
+            await signup(
+                data.email,
+                data.phone,
+                data.password,
+                data.username,
+                data.chessDotComUsername
+            );
+            // Redirect to login or dashboard after successful signup
+            router.push('/login');
+        } catch (error) {
+            console.error("Error during signup:", error);
+            setError(error instanceof Error ? error.message : 'An error occurred during signup');
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    // arrow function for handling the entering of the foreign username
+    // NOTE : 
+    //  React.MouseEvent<HTMLButtonElement> , this what it does is this : React.mouseevent is a generic type from react representing a mouse event like a click
+    // <HTMLButtonElement> is a type parameter that specifies which HTML element the event is associated with
+    // and they together mean a mouse event that occured on a button element in react
+
+    const handleSwitchToForeign = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault(); // Prevent form submission
+        console.log('the chess.com username button has been clicked');
+        if (iHaveForeignChessAccount === true) {
+            setIHaveForeignChessAccount(false);
+        }else {
+            setIHaveForeignChessAccount(true);
         }
     }
 
@@ -76,21 +112,48 @@ export default function SignUpPage(){
             <div className = "flex min-h-screen items-center justify-center">
                 <div className = "w-full max-w-md p-8">
                     <h2 className = "mb-6 text-center text-2xl font-semibold text-black ">Create your account?</h2>
+                    {error && (
+                        <div className="mb-4 p-2 text-sm text-red-600 bg-red-100 rounded-md">
+                            {error}
+                        </div>
+                    )}
                     <form onSubmit = {handleSubmit(onSubmit)}>
                         <div className = "mb-4">
+                            {/* this button will be used to conditionaly render the username input field based on whether the chess.com username is available or not */}
+                            <button 
+                                type="button" // Add type="button" to prevent form submission ( the typ button is added to prevene the button from submitting the form)
+                                className="text-black p-2 rounded-lg bg-gray-200 border border-gray-600 mb-2"
+                                onClick={handleSwitchToForeign}
+                            >
+                                {iHaveForeignChessAccount ? "I don't have a chess.com account" : "Sign up using chess.com account"}
+                            </button>
                             <label htmlFor="username" className = "mb-1 block text-sm font-medium text-black">
                                 Username
                             </label>
-                            <input type="username" 
-                            id="username"
-                            {...register("username")}
-                            placeholder="enter your username"
-                            className = "text-black p-2 rounded-lg w-full  border border-gray-600 focus:ring-1 focus:ring-black focus:outline-none placeholder:text-gray-600  placeholder:text-sm "
-                            />
-                            {errors.username && (
-                                <p className = "text-xs text-red-500 mt-1">
-                                    {errors.username.message}
-                                </p>
+                            {  // if a user has a foreing account ask for foreing username , if not ask for new username
+                            iHaveForeignChessAccount ? (
+                                <div>
+                                    <input type="chessDotComUsername"
+                                    id = "chessDotComUsername"
+                                    {...register('chessDotComUsername')}
+                                    placeholder="enter your chess.com username"
+                                    className = "text-black p-2 rounded-lg w-full border border-gray-600 focus:ring-1 focus:ring-black focus:outline-none placeholder:text-gray-600 placeholder:text-sm"
+                                    />
+                                    {errors.chessDotComUsername && (
+                                        <p className = "text-xs text-red-500 mt-1">{errors.chessDotComUsername.message}</p>
+                                    )}
+                                </div>
+                        ) : (<div>
+                                    <input type="username" 
+                                id="username"
+                                {...register("username")}
+                                placeholder="enter your username"
+                                className = "text-black p-2 rounded-lg w-full  border border-gray-600 focus:ring-1 focus:ring-black focus:outline-none placeholder:text-gray-600  placeholder:text-sm "
+                                />
+                                {errors.username && (
+                                    <p className = "text-xs mt-1 text-red-500">{errors.username.message}</p>
+                                )}
+                                </div>   
                             )}
                         </div>
                         <div className = "mb-4">

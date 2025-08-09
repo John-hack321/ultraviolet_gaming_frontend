@@ -9,6 +9,7 @@ export const signInSchema = z.object({
 
 export const signUpSchema = z.object({
     username: z.string().min(6, "The username must be at least 6 characters"),
+    chessDotComUsername : z.string().min(2, "the username must be more than two characters"),
     email: z.string().email("Invalid email"),
     phone: z.string()
         .min(10, "Phone number must be at least 10 digits")

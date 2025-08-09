@@ -37,7 +37,7 @@ function ProfileContent() {
         totalEarnings: 1250
     };
 
-    // Fetch user data on component mount
+    // Fetch user data on component mount : this is because useEffect runs atleast once and this is when the component renders for the first time 
     useEffect(() => {
         const loadUserData = async () => {
             try {

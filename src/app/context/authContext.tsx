@@ -16,7 +16,7 @@ type AuthContextType = { // here we get o define what data or function the auth 
   login: ( username : string , password: string) => Promise<void>;
   logout: () => void;
   loading : boolean;
-  signup : ( username : string , email : string ,phone : number ,  password : string ) => Promise<void>;
+  signup : (  email : string ,phone : string ,  password : string , username: string , chessDotComUsername : string ) => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined); // the create context is used to create a context to share data accross our app ie. the logged in user 
@@ -70,7 +70,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     checkAuthStatus();
   }, []);
 
-  const signup = async ( username : string , email : string ,phone : number ,  password : string ) => {
+  // for now we have put the two usernames to have defaults of empty to prevent errors
+  const signup = async (  email : string ,phone : string ,  password : string , username : string = "", chessDotComUsername : string = "") => {
     try { // now we are going to define what happens on click of the sign up button 
       // since this time our data is going to be sent as payload rather than form data we are not going to use this for now 
     {/*
@@ -80,15 +81,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       formData.append('email' , email);
       console.log('the user signup data is now being sent to the fast api backend ');
       */}
-      const str_phone = phone.toString()
-      const payload = {
-        username,
+      // const str_phone = phone.toString() no need for this as we changed the phone argument to now be of string type
+      
+      // conditional creation of payload based on whether the chess.com username is provided or not
+      // first initilaize the payload with common values to prevent scope errors
+      const payload : any = {
         email,
-        str_phone,
+        phone,
         password,
-        }
+      }
 
-        const response = await axios.post('http://localhost:8000/auth/' , payload , {
+      if (username && username.trim() !== "") {
+        payload.username = username
+      }
+
+      if (chessDotComUsername && chessDotComUsername.trim() !== "") {
+        payload.chessDotComUsername = chessDotComUsername
+      }
+
+      const response = await axios.post('http://localhost:8000/auth/' , payload , {
           headers : {
             'Content-Type' : 'application/json',
             'Accept' : 'application/json',
