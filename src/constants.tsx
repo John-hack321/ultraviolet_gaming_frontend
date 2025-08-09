@@ -14,7 +14,7 @@ export const navBarIcons = [
     {
         'name' : "games",
         'icon' : <Sword/>,
-        'redirectPath' : "/chess_match_interface",
+        'redirectPath' : "/games",
     },
     {
         'name' : "profile",
