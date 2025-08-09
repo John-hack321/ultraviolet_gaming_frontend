@@ -11,8 +11,6 @@ import ProtectedRoute from '../components/protectedRoute';
 import Header from '../components/header';
 import NavBar from '../components/navBar';
 
-
-
 // for now we will hard code the opponent data and change this once we move to production
 const OpponentData = {
     'username' : "Opponent",
@@ -28,10 +26,7 @@ const UserData = {
     'time' : '10 : 00'
 }
 
-
-
 function ChessMatch() {
-
     // define data points for storing states and data here
     const [userData , setUserData] = useState<UserProfileResponse | null>(null) // default to null for before loading
     const [loading , setLoading] = useState(false)
@@ -43,68 +38,81 @@ function ChessMatch() {
 
     if (loading) {
         return(
-            <div className = 'min-h-screen bg-white'>
-                <div className = "text-black font-bold">loading</div>
+            <div className='min-h-screen flex items-center justify-center' style={{backgroundColor: '#262522'}}>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-400"></div>
             </div>
         )
     }
 
     return (
-        <div className="min-h-screen bg-cover bg-center flex flex-col gap-4 px-1" style={{backgroundImage: "url('/dark_mapple.png')"}}>
-            {/* the navbar part at the top */}
-            <div className = "sticky z-10 ">
-                <Header/>
-                <div className = "text-white flex p-2 gap-4 items-center">
-                    <Menu size = {26}/> {/* later on impement an onclick functionality for this where it changes to x when clicked */}
-                    <h1 className = "text-lg font-bold tracking-wide">chess_matches</h1>
+        <div className="min-h-screen flex flex-col" style={{backgroundColor: '#262522'}}>
+            {/* Header */}
+            <div className="sticky top-0 z-10 shadow-lg" style={{backgroundColor: '#302e2b'}}>
+                <div className="px-4 py-2">
+                    <h1 className="text-xl font-bold text-white">.ULVT_GAMERS</h1>
+                </div>
+                <div className="flex items-center px-4 py-3 border-b" style={{borderColor: '#3C3B39'}}>
+                    <Menu size={24} className="text-orange-400 mr-3" />
+                    <h1 className="text-lg font-semibold text-white">Chess Match</h1>
                 </div>
             </div>
-            {/* opponent title and timer */}
-            <div className = "bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg py-3 flex items-center justify-between pr-4">
-                <div className = "flex p-2 gap-2 items-center">
-                    <ProfileIcon width={40}/>
-                    <div className = "flex flex-col ">
-                        <h2 className ="text-white text-lg font-bold ">{OpponentData.username}</h2>
-                        <div className = "flex px-2 gap-2 items-center">
-                            <h2 className = "text-white font-medium">{OpponentData.ranking}</h2>
-                            <CountryFlagIcon code = {OpponentData.country_code} size={13}/>
+
+            {/* Main Content */}
+            <div className="flex-1 px-1 py-4 space-y-6">
+                {/* Opponent Info */}
+                <div className="rounded-lg shadow-lg border p-4" style={{backgroundColor: '#3C3B39', borderColor: '#302e2b'}}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-orange-500 rounded-full p-2">
+                                <ProfileIcon width={32}/>
+                            </div>
+                            <div>
+                                <h2 className="text-white font-bold text-lg">{OpponentData.username}</h2>
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-orange-300 font-semibold">{OpponentData.ranking}</span>
+                                    <CountryFlagIcon code={OpponentData.country_code} size={14}/>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Opponent Timer */}
+                        <div className="rounded-lg px-4 py-3 border-2 border-orange-400" style={{backgroundColor: '#302e2b'}}>
+                            <span className="text-orange-300 text-xl font-mono font-bold">{OpponentData.time}</span>
                         </div>
                     </div>
                 </div>
-                {/* opponent timer : make this component reusable later on*/}
-                <div>
-                    <div className = "bg-yellow-950 bg-opacity-70 p-4 rounded-lg border border-gray-500">
-                        <h1 className = "text-white text-2xl font-bold">{OpponentData.time}</h1>
-                    </div>
+
+                {/* Chess Board */}
+                <div className="rounded-lg shadow-lg border p-2" style={{backgroundColor: '#3C3B39', borderColor: '#302e2b'}}>
+                    <ChessGame/>
                 </div>
-            </div>
-            {/* the chessborad now  */}
-            <div className = "shadow-2xl">
-                <ChessGame/>
-            </div>
-            {/* native user status and time make this component reusable later on */}
-            <div className = "bg-yellow-900 bg-opacity-70 backdrop-blur-sm shadow-lg rounded-lg flex items-center justify-between pr-4">
-                <div className = "flex p-2 gap-2 items-center">
-                    <ProfileIcon width={40}/>
-                    <div className = "flex flex-col">
-                        <h2 className ="text-white text-lg font-bold  ">{UserData.username}</h2>
-                        <div className = "flex px-2 gap-2 items-center">
-                            <h2 className = "text-white font-medium">{UserData.ranking}</h2>
-                            <CountryFlagIcon code = {UserData.country_code} size={13}/>
+
+                {/* User Info */}
+                <div className="rounded-lg shadow-lg border p-4" style={{backgroundColor: '#3C3B39', borderColor: '#302e2b'}}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                            <div className="bg-orange-500 rounded-full p-2">
+                                <ProfileIcon width={32}/>
+                            </div>
+                            <div>
+                                <h2 className="text-white font-bold text-lg">{UserData.username}</h2>
+                                <div className="flex items-center space-x-2">
+                                    <span className="text-orange-300 font-semibold">{UserData.ranking}</span>
+                                    <CountryFlagIcon code={UserData.country_code} size={14}/>
+                                </div>
+                            </div>
+                        </div>
+                        {/* User Timer */}
+                        <div className="rounded-lg px-4 py-3 border-2 border-orange-400" style={{backgroundColor: '#302e2b'}}>
+                            <span className="text-orange-300 text-xl font-mono font-bold">{UserData.time}</span>
                         </div>
                     </div>
                 </div>
-                {/* opponent timer : make this component reusable later on*/}
-                <div>
-                    <div className = "bg-yellow-950 bg-opacity-70 p-4 rounded-lg border border-gray-500">
-                        <h1 className = "text-white text-2xl font-bold">{UserData.time}</h1>
-                    </div>
-                </div>
             </div>
-            <div className = "sticky z-10">
-                <NavBar/>
+
+            {/* Navigation Bar */}
+            <div className="sticky bottom-0 z-10">
+                <NavBar bg={"orange-300"}/>
             </div>
-            
         </div>
     )
 }

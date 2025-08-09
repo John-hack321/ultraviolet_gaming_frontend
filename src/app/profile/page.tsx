@@ -278,7 +278,7 @@ function ProfileContent() {
 
             {/* Navigation Bar */}
             <div className="sticky bottom-0 z-10 bg-white border-t border-gray-200">
-                <NavBar />
+                <NavBar bg = {'white'} />
             </div>
         </div>
     );
