@@ -8,13 +8,20 @@ export const signInSchema = z.object({
 )
 
 export const signUpSchema = z.object({
-    username: z.string().min(6, "The username must be at least 6 characters"),
-    chessDotComUsername : z.string().min(2, "the username must be more than two characters"),
+    username: z.string().optional(),
+    chessDotComUsername : z.string().optional(),
     email: z.string().email("Invalid email"),
     phone: z.string()
         .min(10, "Phone number must be at least 10 digits")
         .regex(/^[0-9]+$/, "Phone number must contain only numbers"),
     password: z.string().min(6, "Password must be at least 6 characters"),
+}).refine((data) => {
+    const username = data.username && data.username.length >= 6;
+    const chessDotComUsername = data.chessDotComUsername && data.chessDotComUsername.length >= 2;
+    return username || chessDotComUsername;
+},{
+    message :'Either username (6+ chars ) or chessDotComUsername(2+ chars) is reaquired',
+    path  : ['username'] // shows what path shows this message
 });
 
 export const transactoinSchema = z.object({

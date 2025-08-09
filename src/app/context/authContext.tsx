@@ -87,6 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (!username || !phone || !password) {
         throw new Error('username , passowrd and email are rquired')
       }
+      
       if (!username.trim() && !chessDotComUsername.trim()) {
         throw new Error(`Either the username or the chessDotComUsername is required`)
       }

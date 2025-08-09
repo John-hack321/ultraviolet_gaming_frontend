@@ -68,8 +68,8 @@ export default function SignUpPage(){
                 data.email,
                 data.phone,
                 data.password,
-                data.username,
-                data.chessDotComUsername
+                data.username || "",
+                data.chessDotComUsername || "",
             );
             // Redirect to login or dashboard after successful signup
             // router.push('/login'); // redirecting i beleive is already handled signup function as it redirects to the dashboard
