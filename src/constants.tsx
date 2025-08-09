@@ -12,7 +12,7 @@ export const navBarIcons = [
         'redirectPath' : "/tournaments",
     },
     {
-        'name' : "matches",
+        'name' : "games",
         'icon' : <Sword/>,
         'redirectPath' : "/chess_match_interface",
     },
