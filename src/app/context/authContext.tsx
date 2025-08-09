@@ -83,21 +83,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       */}
       // const str_phone = phone.toString() no need for this as we changed the phone argument to now be of string type
       
+      // validate if the required fields are availble
+      if (!username || !phone || !password) {
+        throw new Error('username , passowrd and email are rquired')
+      }
+      if (!username.trim() && !chessDotComUsername.trim()) {
+        throw new Error(`Either the username or the chessDotComUsername is required`)
+      }
+
       // conditional creation of payload based on whether the chess.com username is provided or not
       // first initilaize the payload with common values to prevent scope errors
+      // note : only create payload fields with non-empty values 
       const payload : any = {
-        email,
-        phone,
-        password,
+        email : email.trim(),
+        phone : phone.trim(),
+        password : password,
       }
 
       if (username && username.trim() !== "") {
-        payload.username = username
+        payload.username = username.trim();
       }
 
       if (chessDotComUsername && chessDotComUsername.trim() !== "") {
-        payload.chessDotComUsername = chessDotComUsername
+        payload.chessDotComUsername = chessDotComUsername.trim();
       }
+
+      // debug logs
+      console.log(`paylod constructed successfuly`)
+      console.log(`payload content :` , {...payload , password : ['HIDDEN'] }) // to hide the passord from being visisble when printint on the terminal
 
       const response = await axios.post('http://localhost:8000/auth/' , payload , {
           headers : {

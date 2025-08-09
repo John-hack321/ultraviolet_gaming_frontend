@@ -48,12 +48,17 @@ export default function SignUpPage(){
 
     useEffect(() => {
         // Form is valid if we have email, password, and at least one of username or chessDotComUsername
-        const hasUsername = username?.trim() !== '';
-        const hasChessUsername = chessDotComUsername?.trim() !== '';
-        const hasRequiredFields = !!email && !!password && (hasUsername || hasChessUsername);
+        console.log('form validation useEffect running')
+        const hasUsername = Boolean(username && username.trim() !== '');
+        const hasChessUsername = Boolean(chessDotComUsername && chessDotComUsername.trim() !== '');
+        const hasEmail = Boolean(email && email.trim() !== '');
+        const hasPassword = Boolean(password && password.trim() !== '');
+        const hasPhone = Boolean(phone && phone.trim() !== '');
+
+        const hasRequiredFields = hasEmail && hasPassword && hasPhone && (hasUsername || hasChessUsername);
         
-        setIsFormValid(hasRequiredFields);
-    }, [email, password, username, chessDotComUsername]);
+        setIsFormValid(hasRequiredFields); // fix this typescript error here : to fix it we addeed teh boolean thing for the constants up there to prevent the error
+    }, [email, password, username, chessDotComUsername, phone]); // update the dependancy array to fix the bugs
 
     const onSubmit = async (data: SignUpFormValues) => {
         try {
@@ -67,7 +72,7 @@ export default function SignUpPage(){
                 data.chessDotComUsername
             );
             // Redirect to login or dashboard after successful signup
-            router.push('/login');
+            // router.push('/login'); // redirecting i beleive is already handled signup function as it redirects to the dashboard
         } catch (error) {
             console.error("Error during signup:", error);
             setError(error instanceof Error ? error.message : 'An error occurred during signup');
