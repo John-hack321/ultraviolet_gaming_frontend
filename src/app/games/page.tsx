@@ -11,7 +11,7 @@ function GamesContent() {
     const handleNewChessMatchButtonClick = () => {
         console.log('the new chess match button has been clicked')
         // i guess when this button is clicked we wanna redirect to the chess match interface
-        router.push('/chess_match_interface')
+        router.push('/chess_abilities/chessGameSelections')
     }
 
     return (
