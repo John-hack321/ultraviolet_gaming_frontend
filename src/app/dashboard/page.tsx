@@ -36,7 +36,7 @@ function Dashboard() {
 
                 </div>
                 {/* match making section */}
-                <NavBar/>
+                <NavBar bg = "white" textColor = "text-black" />
             </div>
     )
 }

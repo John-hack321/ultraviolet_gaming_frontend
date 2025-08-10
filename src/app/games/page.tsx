@@ -81,7 +81,7 @@ function GamesContent() {
 
             {/* Navigation Bar */}
             <div className="sticky bottom-0 z-10 bg-white border-t border-gray-200">
-                <NavBar bg="custom-gray"/>
+                <NavBar bg="white" textColor="text-black"/>
             </div>
         </div>
     )

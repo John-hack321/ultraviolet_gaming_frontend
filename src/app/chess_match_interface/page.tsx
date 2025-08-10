@@ -48,9 +48,11 @@ function ChessMatch() {
         <div className="min-h-screen flex flex-col" style={{backgroundColor: '#262522'}}>
             {/* Header */}
             <div className="sticky top-0 z-10 shadow-lg" style={{backgroundColor: '#302e2b'}}>
+                {/* 
                 <div className="px-4 py-2">
                     <h1 className="text-xl font-bold text-white">.ULVT_GAMERS</h1>
                 </div>
+                 */}
                 <div className="flex items-center px-4 py-3 border-b" style={{borderColor: '#3C3B39'}}>
                     <Menu size={24} className="text-orange-400 mr-3" />
                     <h1 className="text-lg font-semibold text-white">Chess Match</h1>
@@ -111,7 +113,7 @@ function ChessMatch() {
 
             {/* Navigation Bar */}
             <div className="sticky bottom-0 z-10">
-                <NavBar bg={"orange-300"}/>
+                <NavBar bg="native-brown" textColor='text-white'/>
             </div>
         </div>
     )
