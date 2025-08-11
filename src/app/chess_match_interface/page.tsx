@@ -1,5 +1,6 @@
 'use client'
-import {CheckSquare2Icon, Menu} from 'lucide-react'
+import {CheckSquare2Icon} from 'lucide-react'
+import HambagerMenu from '../components/hamberger_menu';
 
 import { useEffect, useState } from 'react';
 
@@ -54,7 +55,7 @@ function ChessMatch() {
                 </div>
                  */}
                 <div className="flex items-center px-4 py-3 border-b" style={{borderColor: '#3C3B39'}}>
-                    <Menu size={24} className="text-orange-400 mr-3" />
+                    <HambagerMenu />
                     <h1 className="text-lg font-semibold text-white">Chess Match</h1>
                 </div>
             </div>
