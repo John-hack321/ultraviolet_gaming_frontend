@@ -6,10 +6,16 @@ import { Chess } from "chess.js";
     this file contains the Reactchessboard-configuration functions
     everything from : onDrop to findBestMove are found here
     */}
-
 // find best move function
 
-function findBestMove( chessGame : Chess  , engine : Engine) {
+ const [positionEvaluation , setPositionEvaluation] = useState(0); // default value of 0
+  const [depth , setDepth] = useState(10); // a default depth of 10
+  const [bestLine , setBestLine] = useState('');
+  const [possibleMate
+
+
+
+function findBestMove(  chessGame : Chess  , engine : Engine ) {
     engine.evaluatePosition(chessGame.fen() , 18)
     engine.onMessage(({
       positionEvaluation,
@@ -39,3 +45,10 @@ function findBestMove( chessGame : Chess  , engine : Engine) {
       }
     });
   }
+
+
+class chessEngineFunctionality {
+    constructor () {
+
+    }
+}
