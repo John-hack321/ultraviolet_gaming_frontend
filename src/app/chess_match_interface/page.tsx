@@ -4,7 +4,7 @@ import HambagerMenu from '../components/hamberger_menu';
 
 import { useEffect, useState } from 'react';
 
-import ChessGame from '../components/Chessboard'
+import ChessGame from '../chess_abilities/chess_components/Chessboard'
 import ProfileIcon from '../components/profileIcon';
 import CountryFlagIcon from '../components/flagIcons';
 import { UserProfileResponse } from '../api/users';
