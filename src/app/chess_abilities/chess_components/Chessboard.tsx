@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef , useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard, PieceDropHandlerArgs, SquareHandlerArgs } from "react-chessboard";
-import Engine from "../engines/stockfish/engine";
+import { ChessEngineManager , EngineAnalysis } from "../chessConfigurations/chessConfig";
 
 type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
               'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' |
@@ -15,8 +15,19 @@ type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
 
 export default function chessGame () {
 
-  // initialize the engine first
-  const engine = useMemo(() => new Engine , []);
+  // new implementation with the new global chessEngine manager class
+
+  // initialize the chess engine itself
+  const engineManager = useRef(new ChessEngineManager());
+  
+  // initlize the data point to be used by the class , by starting with game start state
+  const [analysis , setAnalysis] = useState<EngineAnalysis>({ // chess board initila starting state
+    positionEvaluation : 0,
+    possibleMate : null,
+    bestLine : '',
+    depth : 0,
+    bestMove : null,
+  })
 
   // make the chessgame use useRef from react to always get the latest game state
 
@@ -28,49 +39,29 @@ export default function chessGame () {
   const [moveFrom , setMoveFrom ] = useState('') // preset to an empty string
   const [optionSquares , setOptionSquares] = useState({});
 
-  // setup the engine variables
-  const [positionEvaluation , setPositionEvaluation] = useState(0); // default value of 0
-  const [depth , setDepth] = useState(10); // a default depth of 10
-  const [bestLine , setBestLine] = useState('');
-  const [possibleMate , setPossibleMate] = useState('');
-
-  // when the chess game position changes find the best move 
-  useEffect(() => { // what this useState function does is it tracks the current board state and on change it will try to find the best move based on the board state
-    if (!chessGame.isGameOver() || chessGame.isDraw()) { // dont forget ot call them with the parenthesis
-      findBestMove();
-    };
-  }, [chessGame.fen()] );
-
-  function findBestMove() {
-    engine.evaluatePosition(chessGame.fen() , 18)
-    engine.onMessage(({
-      positionEvaluation,
-      possibleMate,
-      pv,
-      depth
-    }) => {
-      // ignore the messages with a depth of less than 10
-      if (depth && depth < 10) {
-        return;
-      }
-
-      // update the position evaluation accordingly
-      if (positionEvaluation) {
-        setPositionEvaluation((chessGame.turn() === 'w' ? 1 : -1) * Number(positionEvaluation) / 1000); // this line set the identifier fr the white or black pieces by asigning a number then gets the evaluation and multiplies with it
-      };
-
-      // update teh possibleMate , depth and bestline
-      if (possibleMate) {
-        setPossibleMate(possibleMate)
-      };
-      if (depth) {
-        setDepth(depth)
-      };
-      if (pv) {
-        setBestLine(pv);
-      }
+  {/*
+    useEffect below : 
+    tracks the board state 
+    */}
+  useEffect(() => { 
+    // set callback for the analysis updates 
+    engineManager.current.setAnalysisUpdateCallback((newAnalysis) => {
+      setAnalysis(newAnalysis);
     });
-  }
+
+    // cleanup on unmount
+    return () => {
+      engineManager.current.terminate();
+    };
+  },[]);
+
+  // this useEffect wil be used to find the best move when the position variable changes
+  useEffect(() => {
+    if (!chessGame.isGameOver() && !chessGame.isDraw()) {
+      engineManager.current.findBestMove(chessGame);
+    };
+  }, [chessPosition])
+
 
   // for now we are going to create automated chess for the opponent 
   const oponent = ""; // for now we will leave it blank and add more functionality later on
@@ -200,6 +191,9 @@ export default function chessGame () {
   setMoveFrom('');
   setOptionSquares({});
 
+  // stop the current analysis and reset
+  engineManager.current.stop();
+
   setTimeout(makerandomMove , 300);
 
   }
@@ -231,22 +225,11 @@ export default function chessGame () {
         promotion : 'q', // as said before for simplicity we now promote to queen first
       });
 
-      // lets add the engine functionalities here 
-      // begining with some state updates
-
-      setPossibleMate('');
-
-      // update the game state 
-      // setChessPosition(chessGame.fen()) this is commented for now since the game state is already updated down there
-
       // upon a successful move we set the update the chessgame status as always 
       setChessPosition(chessGame.fen());
 
       // stop the engine ( it will be restarted by the useEffect running findBestMove)
-      engine.stop();
-
-      // reset the bestline
-      setBestLine('');
+      engineManager.current.stop();
 
       // we then make the random oponent move
       setTimeout(makerandomMove,500 ) // we use the timeout to make the random move appear after some delay not just instant 
@@ -265,9 +248,6 @@ export default function chessGame () {
 
   }
 
-  // get the best move
-  const bestMove = bestLine?.split(' ')?.[0];
-
   // create the props to pass the react-chessboard component
   {/* commentedd for testing in order to experiment with the options for bestmoves
   const chessboardOptions = {
@@ -284,9 +264,9 @@ export default function chessGame () {
   // we are now going to create chessboard options for both white and black perspectives
   // this is for the white peices
   const whiteChessboardOptions = {
-    arrows: bestMove ? [{
-      startSquare: bestMove.substring(0, 2) as Square,
-      endSquare: bestMove.substring(2, 4) as Square,
+    arrows: analysis.bestMove ? [{
+      startSquare: analysis.bestMove.substring(0, 2) as Square,
+      endSquare: analysis.bestMove.substring(2, 4) as Square,
       color: 'rgb(0, 128, 0)'
     }] : undefined,
     canDragPiece : canDragPieceWhite,
@@ -300,9 +280,9 @@ export default function chessGame () {
 
    // now the same but now for the black pieces
   const blackChessboardOptions = {
-    arrows: bestMove ? [{
-      startSquare: bestMove.substring(0, 2) as Square,
-      endSquare: bestMove.substring(2, 4) as Square,
+    arrows: analysis.bestMove ? [{
+      startSquare: analysis.bestMove.substring(0, 2) as Square,
+      endSquare: analysis.bestMove.substring(2, 4) as Square,
       color: 'rgb(0, 128, 0)'
     }] : undefined,
     canDragPiece : canDragPieceBlack,
@@ -334,12 +314,12 @@ export default function chessGame () {
   return (
     <div>
       <div>
-        Position Evaluation:{''}
-        {possibleMate ? `#${possibleMate}` : positionEvaluation}
+        Position Evaluation{ engineManager.current.getDisplayEvaluation()}
         {'; '}
-        Depth: {depth}
+        Depth: {analysis.depth}
+        {engineManager.current.isCurrentlyAnalyzing() && '...Analyzing'}
         <div>
-          Best line : <i>{bestLine.slice(0, 40)}</i>...
+          Best line : <i>{analysis.bestLine.slice(0, 40)}</i>...
         </div>
         <Chessboard options = {whiteChessboardOptions}/>
       </div>

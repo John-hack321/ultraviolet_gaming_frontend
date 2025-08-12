@@ -2,8 +2,17 @@
 import HambagerMenu from "@/app/components/hamberger_menu"
 import NavBar from "@/app/components/navBar"
 import ProtectedRoute from "@/app/components/protectedRoute"
+import { useRouter } from "next/navigation"
 
 function ChessGameSelection () {
+
+    const router = useRouter()
+
+    const handleNewGameClick = () => {
+        console.log('the new game buttom has been clicked') // logging for errors
+        router.push('/chess_match_interface');
+    }
+
     return (
         <div className = "bg-chess-aesthetic-bg-brown flex flex-col min-h-screen">
             <div className = "flex py-4 px-2 gap-2 bg-chess-navs shadow-lg sticky top-0 z-10">
@@ -17,17 +26,18 @@ function ChessGameSelection () {
                     {/* options div */}
                     <div className = "w-1/2 p-2 flex flex-col gap-2">
                         {/* play a game */}
-                        <div className = "p-3 shadow-md rounded-md bg-chess-cards">
-                            <h2>New game</h2>
-                        </div>
+                        <button className = "p-3 shadow-md rounded-lg bg-chess-edge-color text-chess-aesthetic-bg-brown font-bold"
+                        onClick = {handleNewGameClick}>
+                            Play new game
+                        </button>
                         {/* play agains bots */}
-                        <div className = "p-3 shadow-md rounded-md bg-chess-cards">
-                            <h2>Play bots</h2>
-                        </div>
+                        <button className = "p-3 shadow-md rounded-lg bg-chess-edge-color text-chess-aesthetic-bg-brown font-bold">
+                            play bots
+                        </button>
                         {/* play a friend online */}
-                        <div className = "p-3 rounded-md shadow-md bg-chess-cards">
-                            <h2>Play a friend</h2>
-                        </div>
+                        <button className = "p-3 bg-chess-edge-color rounded-lg shadow-md text-chess-aesthetic-bg-brown font-bold">
+                            play a friend
+                        </button>
                     </div>
                     {/* chessboard div */}
                     <div>
@@ -56,7 +66,7 @@ function ChessGameSelection () {
                 </div>
             </div>
             <div className = 'sticky z-10 bottom-0'>
-                <NavBar textColor="white" bg = "native-brown"/>
+                <NavBar classname="text-white bg-chess-navs"/>
             </div>
         </div>
     )

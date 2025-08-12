@@ -13,9 +13,10 @@
   
   /* Chess game colors - using kebab-case for CSS custom properties */
   --color-chess-aesthetic-bg-brown: #262522;
-  --color-chess-navs: #302e2b;
+  --color-chess-navs: #302e2b; /* this is the native brown on the navbar too*/
   --color-chess-cards: #3C3B39;
   --color-chess-edge-color: #F59E0B;
+  --color-chess-icons-orange : #fb923c;
   
   /* Semantic colors */
   --color-success: #34d567;
