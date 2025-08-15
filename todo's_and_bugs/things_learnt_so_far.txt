@@ -1,0 +1,16 @@
+for next.js when we are making a subdirectory from the main one it has to have its own layout page also for it to work well , like 
+for my project here we have this chess_abilities folder which houses all the chess things inhouse , so it has to be a standalone 
+by having its own layout page i guess 
+
+Hook usage rules : 
+    hooks should not be used inside functions , instead they must be called at the top level 
+    of a react component or a custom hook 
+
+static_methods : 
+    these are methods that belong to the class itself not its instances 
+    this are usefull when we don't want to create instances of a class and are good and efficient where : 
+        1) no instances needed and thus cleaner code
+        2) its memeory efficient as only one copy of the method exists in memeory
+        3) stateless design all data is passed as parameters , and thus more predictable and easier to test
+        4) global like but organized , as it groups related functionality to gether and avoids global namespace polution
+    and thus for our chess move generator , the stateless desing is better as its stateless and only operates on inputs it receives

@@ -1,26 +1,29 @@
-'use client'
-import { Chess } from "chess.js"
+// chess config functions 
+import {Chess} from "chess.js";
 
-class chessConfig {
+export function generateRandomMoveFen (fen : string) : string | null {
+    console.log('i have just been called john')
+    try {
+        const game = new Chess(fen)
+        
+        const possibleMoves = game.moves()
 
-    private chessGame : Chess;
-
-    constructor (currentGame : Chess) {
-        this.chessGame = currentGame;
-    }
-
-    private makeRandomMove () {
-        // get the possible moves from the chessGame class
-        const possibleMoves = this.chessGame.moves();
-        // check if game is over 
-        if (this.chessGame.isGameOver()){
-            console.log('the game is over')
-            return ; // return early if game is over
+        if (possibleMoves && possibleMoves.length === 0) {
+            console.log('there are no possible moves')
+            return null;
         }
 
-        const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+        if (!randomMove) {
+            console.log('faliled to generate the reandom move')
+            return null;
+        }
 
-        this.chessGame.move(randomMove);
+        game.move(randomMove)
+        return game.fen();
 
+    }catch (error) {
+        console.log('the generate random move function  failed')
+        return null;
     }
 }
