@@ -12,7 +12,7 @@ type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
               'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6' | 'g7' | 'g8' |
               'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
-export default function chessGame () {
+export default function ChessGame() {
 
   // make the chessgame use useRef from react to always get the latest game state
 
