@@ -13,6 +13,11 @@ function ChessGameSelection () {
         router.push('/chess_match_interface');
     }
 
+    const handlePuzzleButtonClick = () => {
+        console.log('the puzle button has been clicked') // logging for errors 
+        router.push('/chess_abilities/chess_puzzles')
+    }
+
     return (
         <div className = "bg-chess-aesthetic-bg-brown flex flex-col min-h-screen">
             <div className = "flex py-4 px-2 gap-2 bg-chess-navs shadow-lg sticky top-0 z-10">
@@ -53,7 +58,8 @@ function ChessGameSelection () {
                         <img src="/chess_puzzle.png"
                         alt=""
                         className = "rounded-lg  w-full " />
-                        <button className = "bg-chess-edge-color rounded-lg p-2 text-chess-aesthetic-bg-brown font-bold">
+                        <button className = "bg-chess-edge-color rounded-lg p-2 text-chess-aesthetic-bg-brown font-bold"
+                        onClick = {handlePuzzleButtonClick}>
                             New puzzle
                         </button>
                     </div>

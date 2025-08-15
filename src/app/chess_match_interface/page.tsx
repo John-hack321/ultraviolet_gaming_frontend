@@ -114,7 +114,7 @@ function ChessMatch() {
 
             {/* Navigation Bar */}
             <div className="sticky bottom-0 z-10">
-                <NavBar bg="native-brown" textColor='text-orange'/>
+                <NavBar classname='bg-chess-navs text-white'/>
             </div>
         </div>
     )

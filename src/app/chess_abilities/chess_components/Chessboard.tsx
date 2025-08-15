@@ -53,7 +53,7 @@ export default function chessGame () {
     return () => {
       engineManager.current.terminate();
     };
-  },[]);
+  },[chessGame.fen()]);
 
   // this useEffect wil be used to find the best move when the position variable changes
   useEffect(() => {
