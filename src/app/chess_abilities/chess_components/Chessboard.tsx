@@ -105,8 +105,13 @@ export default function chessGame () {
 
   const handleRandomMove = () => {
     const newFen = generateRandomMoveFen(chessGame.fen())
-    if (newFen) {
+    if (newFen) { // we do this as a way of implementing a null check
+      // setChessPosition(newFen);
+      console.log('the fen is present');
       setChessPosition(newFen);
+      console.log('setChessPosition has benn successfuly updated');
+    } else {
+      console.log('no valid move available');
     }
   }
 

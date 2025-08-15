@@ -2,7 +2,7 @@
 import {Chess} from "chess.js";
 
 export function generateRandomMoveFen (fen : string) : string | null {
-    console.log('i have just been called john')
+    console.log('i have just been called John')
     try {
         const game = new Chess(fen)
         
