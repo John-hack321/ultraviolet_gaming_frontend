@@ -1,0 +1,21 @@
+name : ultraviolette_gamming
+
+on : 
+  pull_request :
+    branches:
+      - master
+
+jobs : 
+  test : 
+    runs_on : ubuntu-latest
+    container : 
+      image : next:20
+    steps :
+      - uses : actions/checkout@v3
+      with : 
+        next-version:20
+      run : npm ci
+      run : npm test
+      run : npm run build
+
+
