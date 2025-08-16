@@ -1,10 +1,14 @@
 /*
 
+<<<<<<< HEAD
 {/*'use client';
 import { useEffect, useMemo, useRef , useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard, PieceDropHandlerArgs, SquareHandlerArgs } from "react-chessboard";
 import Engine from "../engines/stockfish/engine";
+=======
+export default function Board() {
+>>>>>>> origin/master
 
 type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
               'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' |
