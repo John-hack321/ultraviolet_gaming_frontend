@@ -65,13 +65,7 @@ export default function SignUpPage(){
         try {
             console.log('Form submitted with data:', data);
             setIsLoading(true);
-            await signup(
-                data.email,
-                data.phone,
-                data.password,
-                data.username || "",
-                data.chessDotComUsername || "",
-            );
+            await signup(data.email, data.phone, data.password, data.username || "", data.chessDotComUsername || "");
             // Redirect to login or dashboard after successful signup
             // router.push('/login'); // redirecting i beleive is already handled signup function as it redirects to the dashboard
         } catch (error) {
