@@ -265,7 +265,7 @@ function ProfileContent() {
                         </button>
                     </div>
                 </div>
-                <div className = "flex items-center border rounded-lg bg-white items-center justify-center p-4 shadow-sm">
+                <div className = "flex  border rounded-lg bg-white items-center justify-center p-4 shadow-sm">
                     <div>
                         <button 
                         onClick = {handleLogout}
@@ -278,7 +278,7 @@ function ProfileContent() {
 
             {/* Navigation Bar */}
             <div className="sticky bottom-0 z-10 bg-white border-t border-gray-200">
-                <NavBar bg = {'white'} />
+                <NavBar classname="bg-white text-black" />
             </div>
         </div>
     );

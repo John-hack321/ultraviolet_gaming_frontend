@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log(`paylod constructed successfuly`)
       console.log(`payload content :` , {...payload , password : ['HIDDEN'] }) // to hide the passord from being visisble when printint on the terminal
 
-      const response = await axios.post('http://localhost:8000/auth/' , payload , {
+      const response = await axios.post('http://localhost:8001/auth/' , payload , {
           headers : {
             'Content-Type' : 'application/json',
             'Accept' : 'application/json',
@@ -149,7 +149,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       formData.append('username' , username);
       // after creating the form data we send it to the actual endpoint using axios note : axios is used for sending and receiving http requests and more 
       console.log("sending login request with username and password ");
-      const response = await axios.post('http://localhost:8000/auth/token', formData, {
+      const response = await axios.post('http://localhost:8001/auth/token', formData, {
         headers: {
            'Content-Type': 'application/x-www-form-urlencoded' ,
            'Accept' : 'applicaton/json'

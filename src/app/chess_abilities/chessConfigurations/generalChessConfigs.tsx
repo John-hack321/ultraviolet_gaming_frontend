@@ -20,6 +20,7 @@ export function generateRandomMoveFen (fen : string) : string | null {
         }
 
         game.move(randomMove)
+        console.log(`the in gnerateRandomMove in_function game state has been upadated with the new move ${game.fen()}`)
         return game.fen();
 
     }catch (error) {
