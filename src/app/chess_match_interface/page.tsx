@@ -122,9 +122,8 @@ function ChessMatch() {
 
 export default function ChessMatchPage() {
     return (
-        <ProtectedRoute>
+        // for testing purposes will not make this chess match interface a protected router 
             <ChessMatch/>
-        </ProtectedRoute>
     )
 }
 // note : in typescript tsx all componet names must start with an uppercase letter

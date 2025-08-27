@@ -102,14 +102,16 @@ export default function chessGame () {
 
   // for the opponet random move 
   // for now we will use this simple one later on we will use advances such as using the stockfish api
-
+  // this handle remove functio will for now be commented we will make ti better later on 
   const handleRandomMove = () => {
+    console.log('the handle rendom move funtion has been called and starts from here so on ')
     const newFen = generateRandomMoveFen(chessGame.fen())
+    console.log('it has returnened a new fen string of the board state')
     if (newFen) { // we do this as a way of implementing a null check
       // setChessPosition(newFen);
       console.log('the fen is present');
       setChessPosition(newFen);
-      console.log('setChessPosition has benn successfuly updated');
+      console.log('handleRandomMoveFunctoin :board state updated by =>  setChessPosition has been successfuly updated');
     } else {
       console.log('no valid move available');
     }
@@ -159,30 +161,27 @@ export default function chessGame () {
   };
 
   function onSquareClick ({square , piece} : SquareHandlerArgs) {
+    console.log('the onsqareclick starts from here')
+    {/* 
+      first ensure that the moveFrom state is an empty string
+      check if the square has move options , like the places where we can go to from the square 
+      if move options => set the movefrom state to point to the square's string
+      */}
     if (!moveFrom && piece) {
-      // get the move options for the square
       const hasMoveOptions = getMoveOpetions(square as Square);
-      // if move options , set the moveFrom to the square
       if (hasMoveOptions) {
         setMoveFrom(square)
       }
-
       return;
-
     }
-
-    // checking if the square clicked to move to is a valid move
     const moves = chessGame.moves({
       square : moveFrom as Square,
       verbose : true,
     });
-
     const foundMove = moves.find(m => m.from === moveFrom && m.to === square);
     if (!foundMove) {
       const hasMoveOptions = getMoveOpetions(square as Square);
-
       setMoveFrom(hasMoveOptions ? square : '');
-      
       return;
     }
      // is normal move
@@ -193,31 +192,24 @@ export default function chessGame () {
         promotion : 'q',
       });
     }catch (error) {
-      // console.log(`an error occured : ${error}`)
-
-      // if invalid getMove and setMoveOptions
       const hasMoveOptions = getMoveOpetions(square as Square)
-
-      // if new piece , setMoveFrom otherwhise clear MoveFrom
       if (hasMoveOptions) {
         setMoveFrom(square);
       }
-
       return;
   }
-
-  // update the board position
   setChessPosition(chessGame.fen())
+  console.log('onSquareClick : user initiated change of board state has occured based on user initiated move');
 
-  // make a reandom cpu move i believe for the opponent part
-  setTimeout(handleRandomMove , 500)
+  setTimeout(handleRandomMove,300 ) // we use the timeout to make the random move appear after some delay not just instant 
+  console.log('onSquareClick : the chessgame state has been updated based on randomly initiated move');
 
-  // then clear moveFrom and optionSquare
+
+  // update the setMoveFrom variable to an empty string again and reset the optionSquares
   setMoveFrom('');
   setOptionSquares({});
 
-  // stop the current analysis and reset
-
+  console.log('end of the onsquare click function is here')
   }
 
   // lets implement the functionality for only dragging a particular piece type 
@@ -235,11 +227,11 @@ export default function chessGame () {
 
   // and now the onDrop prop piece handler
   function onPieceDrop({sourceSquare , targetSquare} : PieceDropHandlerArgs) {
+    console.log('on peice drop has started here')
     // prevent bad move such as moving a peice offbaord
     if (!targetSquare) {
       return false;
     }
-    
     try {
       chessGame.move({
         from : sourceSquare,
@@ -248,9 +240,8 @@ export default function chessGame () {
       });
 
       setPossibleMate('');
-
-      // upon a successful move we set the update the chessgame status as always 
       setChessPosition(chessGame.fen());
+      console.log('onpiecedrop : the board state has been upadeated using a user initiated move');
 
       // stop the engine ( it will be restarted by the useEffect running findBestMove)
       engine.stop();
@@ -259,13 +250,15 @@ export default function chessGame () {
       setBestLine('');
 
       // we then make the random oponent move
-      // setTimeout(handleRandomMove,500 ) // we use the timeout to make the random move appear after some delay not just instant 
+      setTimeout(handleRandomMove,500 ) // we use the timeout to make the random move appear after some delay not just instant 
+      console.log('onPieceDrop : randomly insitated change in boardsate by the random move function')
 
       // if the game is over we will return false
       if (chessGame.isGameOver() || chessGame.isDraw()) {
         return false;
       }
       // return true 
+      console.log('the ondropiece function has ended here')
       return true;
 
     }catch (error) {

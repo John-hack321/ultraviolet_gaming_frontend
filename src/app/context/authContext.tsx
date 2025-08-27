@@ -152,7 +152,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const response = await axios.post('http://localhost:8001/auth/token', formData, {
         headers: {
            'Content-Type': 'application/x-www-form-urlencoded' ,
-           'Accept' : 'applicaton/json'
+           'Accept' : 'application/json'
           },
       });
 
