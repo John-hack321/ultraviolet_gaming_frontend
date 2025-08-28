@@ -161,12 +161,12 @@ export default function chessGame () {
   };
 
   function onSquareClick ({square , piece} : SquareHandlerArgs) {
-    console.log('the onsqareclick starts from here')
     {/* 
       first ensure that the moveFrom state is an empty string
       check if the square has move options , like the places where we can go to from the square 
       if move options => set the movefrom state to point to the square's string
       */}
+    console.log('the onsqareclick starts from here')
     if (!moveFrom && piece) {
       const hasMoveOptions = getMoveOpetions(square as Square);
       if (hasMoveOptions) {
