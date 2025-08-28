@@ -100,24 +100,21 @@ export default function chessGame () {
   // for now we are going to create automated chess for the opponent 
   const oponent = ""; // for now we will leave it blank and add more functionality later on
 
-  // for the opponet random move 
-  // for now we will use this simple one later on we will use advances such as using the stockfish api
-  // this handle remove functio will for now be commented we will make ti better later on 
   const handleRandomMove = () => {
-    console.log('the handle rendom move funtion has been called and starts from here so on ')
+    /*
+    handler function for using the imported random move functionality
+    call the generateRandomMoveFen funtion
+    use generated newfen to update the game state by moveing the chess pice
+    update the setChessPosition variable for updating the react-chessboard state
+     */
     const newFen = generateRandomMoveFen(chessGame.fen())
-    console.log('it has returnened a new fen string of the board state')
-    if (newFen) { // we do this as a way of implementing a null check
-      // setChessPosition(newFen);
-      console.log('the fen is present');
-      setChessPosition(newFen);
-      console.log('handleRandomMoveFunctoin :board state updated by =>  setChessPosition has been successfuly updated');
+    if (newFen) { 
+      chessGame.move(newFen)
+      setChessPosition(chessGame.fen());
     } else {
       console.log('no valid move available');
     }
   }
-
-  // a function for getting the valid moves for a squeare
 
   function getMoveOpetions (square : Square) {
     /*

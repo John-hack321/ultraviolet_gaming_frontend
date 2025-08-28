@@ -2,6 +2,9 @@
 import {Chess} from "chess.js";
 
 export function generateRandomMoveFen (fen : string) : string | null {
+    /*
+    generate random move functon : generates a new random move fen string
+    */
     console.log('i have just been called John')
     try {
         const game = new Chess(fen)
@@ -19,12 +22,16 @@ export function generateRandomMoveFen (fen : string) : string | null {
             return null;
         }
 
-        game.move(randomMove)
-        console.log(`the in gnerateRandomMove in_function game state has been upadated with the new move ${game.fen()}`)
-        return game.fen();
+        console.log('the rendaom move fen has been created and we are now returning it')
+        const randomMoveFen = randomMove;
+        return randomMoveFen;
 
     }catch (error) {
         console.log('the generate random move function  failed')
         return null;
     }
+}
+
+export function getMoveOptions (movesObject : any) {
+
 }
