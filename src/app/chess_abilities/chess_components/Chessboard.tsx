@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef , useState } from "react";
 import { Chess } from "chess.js";
 import { Chessboard, PieceDropHandlerArgs, SquareHandlerArgs } from "react-chessboard";
-import { ChessEngineManager , EngineAnalysis } from "../chessConfigurations/chessConfig";
 import { generateRandomMoveFen } from "../chessConfigurations/generalChessConfigs";
 import Engine from "../engines/stockfish/engine";
 import { useFormState } from "react-dom";
