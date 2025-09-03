@@ -50,9 +50,9 @@ export default function twoPlayerChess () {
             setIsConnected(socket.connected)
         })
 
-        socket.on('disconnect' , () => {
-            setIsConnected(socket.connected)
-        })
+        // socket.on('disconnect' , () => {
+        //    setIsConnected(socket.connected)
+        // })
     } , [])
 
     const handleChessPieceMove = (moveMade : string ) => {
