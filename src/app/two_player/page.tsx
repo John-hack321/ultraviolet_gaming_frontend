@@ -1,8 +1,10 @@
 'use client'
 import {Chessboard, PieceDropHandlerArgs, PieceHandlerArgs} from "react-chessboard"
 import { Chess } from "chess.js"
-import { useRef , useState , useMemo } from "react"
+import { useRef , useState , useMemo , useEffect } from "react"
 import { generateRandomMoveFen } from "../chess_abilities/chessConfigurations/generalChessConfigs"
+import {socket} from "../test_socket_page/page";
+import { Span } from "next/dist/trace"
 
 type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
               'b1' | 'b2' | 'b3' | 'b4' | 'b5' | 'b6' | 'b7' | 'b8' |
@@ -13,6 +15,11 @@ type Square = 'a1' | 'a2' | 'a3' | 'a4' | 'a5' | 'a6' | 'a7' | 'a8' |
               'g1' | 'g2' | 'g3' | 'g4' | 'g5' | 'g6' | 'g7' | 'g8' |
               'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'h7' | 'h8';
 
+type Move = {
+    'sid' : string,
+    'move' : string,
+}
+
 
 export default function twoPlayerChess () {
 
@@ -22,6 +29,35 @@ export default function twoPlayerChess () {
     const [chessPosition , setChessPosition] = useState(chessGame.fen());
     const [moveFrom , setMoveFrom] = useState('');
     const [optionSquares , setOptionSquares] = useState({});
+    const [playAsWhite , setPlayAsWhite] = useState(true);
+    const [isConnectd , setIsConnected] = useState(socket.connected);
+    const [foreignGameState , setForeignGameState] = useState('');
+    const [fenString , setFenString] = useState('');
+
+    socket.on('make_move' , (data : Move) => {
+        console.log(`the move has been made by ${data.sid} and the data received is ${data}`)
+        setForeignGameState(data.move);
+        chessGame.move(data.move);
+        setChessPosition(data.move)
+    })
+    
+
+    useEffect(() => {
+
+        
+        
+        socket.on('connect' , () => {
+            setIsConnected(socket.connected)
+        })
+
+        socket.on('disconnect' , () => {
+            setIsConnected(socket.connected)
+        })
+    } , [])
+
+    const handleChessPieceMove = (moveMade : string ) => {
+        socket.emit('make_move' , moveMade)
+    }
 
     const handleRandomMove = () => {
         const newFen = generateRandomMoveFen(chessGame.fen())
@@ -48,6 +84,14 @@ export default function twoPlayerChess () {
             })
 
             setChessPosition(chessGame.fen())
+            try {
+                // we need to send the game state via the internet
+                console.log('the handleChessPieceMove functoin has been called')
+                handleChessPieceMove(chessGame.fen())
+                console.log('the move has been sent over the internet to the opponent ')
+            } catch (error) {
+                console.log('an error occured trying to talk to the sio server' , error)
+            }
             return true;
 
         } catch (error) {
@@ -80,14 +124,32 @@ export default function twoPlayerChess () {
         id : 'mulitplayer-black'
     }
 
+    const handlePlayAsClick = () => {
+        console.log('the play as button has been clicked')
+        setPlayAsWhite(!playAsWhite)
+    }
+
     return (
-        <div className = "p-2 flex flex-col gap-2">
-            <div className = "">
-                <Chessboard options={whiteChessboardOptions}/>
-            </div>
+        <div className="p-2 flex flex-col gap-2">
             <div>
-                <Chessboard options={blackChessboardOptions}/>
+                <button 
+                onClick={handlePlayAsClick}
+                className = "p-2 border bg-chess-icons-orange rounded-lg border-chess-icons-orange text-shadow-chess-aesthetic-bg-brown">
+                    {playAsWhite ? (
+                        'play as black'
+                    ) : (
+                        'play as white'
+                    ) }
+                </button>
+                <p>status : {isConnectd ? 
+                (<span className="text-green-500 font-bold">connected</span>) :
+                 (<span className="text-red-500 font-bold">not connected</span>)}</p>
             </div>
+            { playAsWhite ? (
+                <Chessboard options={whiteChessboardOptions} />
+            ) : (
+                <Chessboard options={blackChessboardOptions} />
+            )}
         </div>
     )
 }
