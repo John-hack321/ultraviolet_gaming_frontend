@@ -1,133 +1,144 @@
 'use client'
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Chess } from "chess.js";
-import { Chessboard, PieceDropHandlerArgs } from "react-chessboard";
-import Engine from "../chess_abilities/engines/stockfish/engine";
+import { Chessboard } from "react-chessboard";
+
+type PieceDropHandlerArgs = {
+  sourceSquare: string;
+  targetSquare: string;
+  piece: string;
+};
+
+const GameControls = () => (
+  <div className="bg-chess-navs p-4 rounded-lg">
+    <h2 className="text-xl font-bold text-white mb-2">Game Controls</h2>
+    <div className="flex gap-2">
+      <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+        New Game
+      </button>
+      <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+        Undo Move
+      </button>
+    </div>
+  </div>
+);
+
+const MoveHistory = () => (
+  <div className="bg-chess-navs p-4 rounded-lg">
+    <h2 className="text-xl font-bold text-white mb-2">Move History</h2>
+    <div className="bg-chess-cards p-2 rounded text-gray-300 h-40 overflow-y-auto">
+      <p className="text-sm">Move history will appear here</p>
+    </div>
+  </div>
+);
 
 export default function ChessPracticePage() {
-    const engine = useMemo(() => new Engine(), []);
-    const chessGameRef = useRef(new Chess());
-    const chessGame = chessGameRef.current;
+  const chessGameRef = useRef<Chess>(new Chess());
+  const [fen, setFen] = useState(chessGameRef.current.fen());
+  const [moves, setMoves] = useState<string[]>([]);
 
-    const [chessPosition, setChessPosition] = useState(chessGame.fen());
-    const [positionEvaluation, setPositionEvaluation] = useState(0);
-    const [depth, setDepth] = useState(0);
-    const [bestLine, setBestLine] = useState('');
-    const [possibleMate, setPossibleMate] = useState('');
-    const [moves, setMoves] = useState<string[]>([]);
+  const onPieceDrop = useCallback(({ sourceSquare, targetSquare }: PieceDropHandlerArgs) => {
+    const gameCopy = new Chess(chessGameRef.current.fen());
+    
+    try {
+      const move = gameCopy.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: 'q',
+      });
 
-    useEffect(() => {
-        if (!chessGame.isGameOver()) {
-            findBestMove();
+      if (!move) return false;
+
+      chessGameRef.current = gameCopy;
+      setFen(gameCopy.fen());
+      setMoves(prev => [...prev, move.san]);
+      
+      // Make a random move for the opponent
+      setTimeout(() => {
+        const gameCopy = new Chess(chessGameRef.current.fen());
+        const possibleMoves = gameCopy.moves();
+        
+        if (possibleMoves.length > 0 && !gameCopy.isGameOver()) {
+          const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+          gameCopy.move(randomMove);
+          chessGameRef.current = gameCopy;
+          setFen(gameCopy.fen());
+          setMoves(prev => [...prev, randomMove]);
         }
-    }, [chessGame.fen()]);
+      }, 500);
 
-    function findBestMove() {
-        engine.evaluatePosition(chessGame.fen(), 18);
-        engine.onMessage(({ positionEvaluation, possibleMate, pv, depth }) => {
-            if (depth && depth < 10) return;
-            if (positionEvaluation) {
-                const evalValue = (chessGame.turn() === 'w' ? 1 : -1) * Number(positionEvaluation) / 100;
-                setPositionEvaluation(evalValue);
-            }
-            if (possibleMate) setPossibleMate(possibleMate);
-            if (depth) setDepth(depth);
-            if (pv) setBestLine(pv);
-        });
+      return true;
+    } catch (e) {
+      console.error('Invalid move:', e);
+      return false;
     }
+  }, []);
 
-    function makeAImove() {
-        const bestMove = bestLine?.split(' ')?.[0];
-        if (bestMove) {
-            const from = bestMove.substring(0, 2);
-            const to = bestMove.substring(2, 4);
-            const move = chessGame.move({ from, to, promotion: 'q' });
-            if (move) {
-                setChessPosition(chessGame.fen());
-                setMoves(prev => [...prev, move.san]);
-            }
-        }
-    }
+  const resetGame = useCallback(() => {
+    chessGameRef.current = new Chess();
+    setFen(chessGameRef.current.fen());
+    setMoves([]);
+  }, []);
 
-    const onPieceDrop = (args: PieceDropHandlerArgs) => {
-        if (!args.targetSquare) return false;
-        try {
-            const move = chessGame.move({
-                from: args.sourceSquare,
-                to: args.targetSquare,
-                promotion: 'q',
-            });
-
-            if (!move) return false;
-
-            setChessPosition(chessGame.fen());
-            setMoves(prev => [...prev, move.san]);
-            engine.stop();
-            setBestLine('');
-            setPossibleMate('');
-
-            if (!chessGame.isGameOver()) {
-                setTimeout(makeAImove, 500);
-            }
-            return true;
-        } catch (error) {
-            console.log(`Move failed: ${error}`);
-            return false;
-        }
-    };
-
-    const AnalysisPanel = () => (
-        <div className="bg-chess-navs p-4 rounded-lg space-y-2">
-            <h3 className="font-bold text-white text-lg">Engine Analysis</h3>
-            <div className="text-white">Evaluation: {possibleMate ? `#${possibleMate}` : positionEvaluation.toFixed(2)}</div>
-            <div className="text-gray-400">Depth: {depth}</div>
-            <div className="text-gray-400 truncate">Best Line: {bestLine}</div>
-        </div>
-    );
-
-    const GameControls = () => (
-        <div className="bg-chess-navs p-4 rounded-lg space-y-2">
-            <h3 className="font-bold text-white">Controls</h3>
-            <div className="grid grid-cols-2 gap-2">
-                <button onClick={() => { chessGame.reset(); setChessPosition(chessGame.fen()); setMoves([]); }} className="p-2 bg-chess-icons-orange rounded-lg text-black font-semibold">New Game</button>
-                <button onClick={() => { chessGame.undo(); chessGame.undo(); setChessPosition(chessGame.fen()); setMoves(m => m.slice(0, -2)); }} className="p-2 bg-gray-600 rounded-lg text-white font-semibold">Undo</button>
+  return (
+    <div className="min-h-screen bg-chess-bg text-white p-4">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Chess Practice</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="w-full max-w-lg mx-auto">
+              <div style={{ width: '600px', margin: '0 auto' }}>
+                <Chessboard 
+                  position={fen}
+                  onPieceDrop={onPieceDrop}
+                  boardWidth={600}
+                  customBoardStyle={{
+                    borderRadius: '4px',
+                    boxShadow: '0 5px 15px rgba(0, 0, 0, 0.5)'
+                  }}
+                  customDarkSquareStyle={{ backgroundColor: '#779556' }}
+                  customLightSquareStyle={{ backgroundColor: '#ebecd0' }}
+                />
+              </div>
             </div>
-        </div>
-    );
-
-    const MoveHistory = () => (
-        <div className="bg-chess-navs p-4 rounded-lg flex-grow">
-            <h3 className="font-bold text-white mb-2">Move History</h3>
-            <div className="bg-chess-cards p-2 rounded-md h-48 overflow-y-auto text-white">
-                {moves.length === 0 ? (
-                    <p className="text-gray-400">No moves yet.</p>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="bg-chess-navs p-4 rounded-lg">
+              <h2 className="text-xl font-bold text-white mb-2">Game Controls</h2>
+              <div className="flex gap-2">
+                <button 
+                  onClick={resetGame}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  New Game
+                </button>
+                <button className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+                  Undo Move
+                </button>
+              </div>
+            </div>
+            
+            <div className="bg-chess-navs p-4 rounded-lg">
+              <h2 className="text-xl font-bold text-white mb-2">Move History</h2>
+              <div className="bg-chess-cards p-2 rounded text-gray-300 h-40 overflow-y-auto">
+                {moves.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-1">
+                    {moves.map((move, index) => (
+                      <div key={index} className="text-sm">
+                        {index % 2 === 0 ? `${Math.floor(index / 2) + 1}.` : ''} {move}
+                      </div>
+                    ))}
+                  </div>
                 ) : (
-                    <ol className="list-decimal list-inside grid grid-cols-2 gap-x-4">
-                        {moves.map((move, index) => <li key={index}>{move}</li>)}
-                    </ol>
+                  <p className="text-sm">No moves yet. Make the first move!</p>
                 )}
+              </div>
             </div>
+          </div>
         </div>
-    );
-
-    return (
-        <div className="min-h-screen bg-chess-aesthetic-bg-brown p-4">
-            <div className="container mx-auto">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="w-full md:w-2/3 flex items-center justify-center">
-                        <Chessboard
-                            position={chessPosition}
-                            onPieceDrop={onPieceDrop}
-                            id="practice-chessboard"
-                        />
-                    </div>
-                    <div className="w-full md:w-1/3 flex flex-col gap-4">
-                        <AnalysisPanel />
-                        <GameControls />
-                        <MoveHistory />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+      </div>
+    </div>
+  );
 }
