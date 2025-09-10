@@ -9,9 +9,9 @@ import CountryFlagIcon from '../components/flagIcons';
 import NavBar from '../components/navBar';
 import ProtectedRoute from '../components/protectedRoute';
 
-// Dynamically import the Chessboard component with no SSR
-const Chessboard = dynamic(
-  () => import('../chess_abilities/chess_components/Chessboard'),
+// Dynamically import the ChessGame component with no SSR
+const ChessGame = dynamic(
+  () => import('../chess_abilities/chess_components/Chessboard').then(mod => mod.default),
   { 
     ssr: false,
     loading: () => (
@@ -95,7 +95,7 @@ const ChessMatch = () => {
 
             <div className="rounded-lg shadow-lg border p-2 bg-chess-cards border-chess-navs">
               {gameId ? (
-                <Chessboard />
+                <ChessGame />
               ) : (
                 <div className="h-[70vh] flex items-center justify-center">
                   <p className="text-gray-400">Loading game...</p>
@@ -143,6 +143,14 @@ const ChessMatch = () => {
                 <button 
                   className="p-2 bg-red-700 rounded-lg text-white font-semibold hover:bg-red-800 transition-colors"
                   onClick={() => {
+                    // Handle resign
+                    console.log('Game resigned');
+                    router.push('/');
+                  }}
+                >
+                  Resign
+                </button>
+              </div>
             </div>
           </div>
         </div>
