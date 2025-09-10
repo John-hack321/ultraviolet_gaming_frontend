@@ -1,18 +1,33 @@
 'use client'
+import React, { useState, useEffect } from 'react';
 import Message from "../components/message"
-import { io } from "socket.io-client"
-import React , { useState , useEffect} from "react"
+import { io, Socket } from "socket.io-client";
 
-export const socket = io('http://localhost:8001' , {
-    path : '/sockets',
-    transports : ['websocket']
-}) // and thats how we create a socket for now
+interface MessageType {
+  type: 'join' | 'chat' | 'leave';
+  username?: string;
+  message?: string;
+  timestamp?: string;
+}
 
-export default function socketPage () {
+interface MessageProps {
+  message: MessageType;
+}
 
-    const [isConnected , setIsConnected ] = useState(socket.connected);
-    const [messages , setMessages] = useState<any[]>([]);
-    const [message , setMessage] = useState('');
+// Get API URL from environment variables
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
+
+// Create a single socket instance
+export const socket: Socket = io(API_URL, {
+  path: '/sockets',
+  transports: ['websocket']
+});
+
+export default function SocketPage() {
+
+    const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+    const [messages, setMessages] = useState<MessageType[]>([]);
+    const [message, setMessage] = useState<string>('');
 
     useEffect(() => {
         socket.on('connect' , () => {
@@ -23,12 +38,12 @@ export default function socketPage () {
             setIsConnected(socket.connected);
         })
 
-        socket.on('join' , (data) => {
+        socket.on('join', (data: { username: string }) => {
             console.log(data)
             setMessages((prevMessages) => [...prevMessages , {...data , type : 'join'}])
         })
 
-        socket.on('chat' , (data) => {
+        socket.on('chat', (data: { username: string; message: string }) => {
             setMessages((prevMessages) => [...prevMessages , {...data , type : 'chat'}])
 
         })
@@ -37,9 +52,9 @@ export default function socketPage () {
     const handleSend = () => {
         console.log('the send button has been clicked')
         if (message && message.length) {
-            socket.emit('chat' , message);
+            socket.emit('chat', message);
+            setMessage('');
         }
-        setMessage('')
     }
 
     return (
@@ -66,9 +81,10 @@ export default function socketPage () {
                 placeholder="Enter your message"
                 className ='border w-3/4 p-2 rounded-full  placeholder:text-gray-400n text-black'/>
                 <button className = "text-black border p-2 rounded-full"
-                onClick={handleSend}>send</button>
+                            onClick={handleSend}>
+                            Send
+                        </button>
             </div>
         </div>
     )
 }
-

@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ultraviolet Gaming Platform
 
-## Getting Started
+A modern, real-time gaming platform built with Next.js, featuring chess with Stockfish AI integration, user authentication, and more.
 
-First, run the development server:
+![Project Banner](/public/banner.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Features
+
+- **Chess Game Engine**: Powered by Stockfish.js for AI gameplay
+- **User Authentication**: Secure JWT-based authentication system
+- **Real-time Gameplay**: WebSocket integration for live multiplayer matches
+- **Responsive Design**: Works on desktop and mobile devices
+- **User Profiles**: Track game history, ratings, and statistics
+
+## 🛠 Tech Stack
+
+### Frontend
+- **Next.js 14** - React framework for server-rendered applications
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **React Context API** - State management
+- **Axios** - HTTP client for API requests
+- **WebSocket** - Real-time game updates
+
+### Backend
+- **FastAPI** - Modern, fast web framework for building APIs
+- **SQLAlchemy** - SQL toolkit and ORM
+- **PostgreSQL** - Primary database
+- **Redis** - Caching and real-time features
+- **JWT** - Secure authentication
+- **WebSocket** - Real-time game state synchronization
+
+### Infrastructure
+- **Docker** - Containerization
+- **Nginx** - Reverse proxy
+- **GitHub Actions** - CI/CD pipeline
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm/yarn
+- Python 3.9+
+- Docker and Docker Compose
+- Redis
+- PostgreSQL
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/John-hack321/ultraviolet_gaming_frontend.git
+   cd ultraviolet_gaming_frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Environment Setup**
+   Create a `.env.local` file in the root directory:
+   ```env
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8001
+   # Add other environment variables as needed
+   ```
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. **Open [http://localhost:3000](http://localhost:3000) in your browser**
+
+## 🏗 Project Structure
+
+```
+src/
+├── app/                  # App router
+│   ├── api/             # API routes
+│   ├── components/       # Reusable components
+│   ├── context/         # React context providers
+│   └── styles/          # Global styles
+├── public/              # Static files
+└── types/               # TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🔒 Authentication
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The application uses JWT (JSON Web Tokens) for authentication. Tokens are stored in `localStorage` for persistence across page refreshes.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Authentication Flow
+1. User logs in with email/password
+2. Backend verifies credentials and returns JWT
+3. Token is stored in `localStorage`
+4. Subsequent requests include token in the Authorization header
 
-## Learn More
+## 🤖 Chess Engine Integration
 
-To learn more about Next.js, take a look at the following resources:
+The chess functionality is powered by Stockfish.js, a strong open-source chess engine compiled to WebAssembly for optimal performance in the browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧪 Testing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run the test suite with:
+```bash
+npm test
+# or
+yarn test
+```
 
-## Deploy on Vercel
+## 🚀 Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Vercel (Recommended)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2FJohn-hack321%2Fultraviolet_gaming_frontend)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Manual Deployment
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+2. Start the production server:
+   ```bash
+   npm start
+   ```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) to get started.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Stockfish.js team for the powerful chess engine
+- Next.js and Vercel for the amazing framework and hosting
+- The open-source community for countless libraries and tools
