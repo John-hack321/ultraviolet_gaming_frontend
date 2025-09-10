@@ -1,4 +1,4 @@
-'use client'
+{/*'use client'
 import React, { useState, useEffect } from 'react';
 import Message from "../components/message"
 import { io, Socket } from "socket.io-client";
@@ -88,3 +88,4 @@ export default function SocketPage() {
         </div>
     )
 }
+*/}
