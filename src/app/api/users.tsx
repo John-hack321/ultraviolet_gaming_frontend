@@ -1,6 +1,6 @@
 // src/app/api/users.ts
 import axios from 'axios';
-const API_BASE_URL = 'http://localhost:8001'; // Consider moving this to an environment variable
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
 
 /**
  * Fetches the authenticated user's profile data from the backend
