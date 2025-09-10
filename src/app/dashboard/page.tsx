@@ -1,18 +1,30 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Home, Gamepad2, Trophy, Users, Wallet, Settings, Bell, Search,
-  TrendingUp, Clock, Target, Shield, Menu, X, LogOut, ArrowRight
+  TrendingUp, Clock, Target, Shield, Menu, X, LogOut, ArrowRight, Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import ProtectedRoute from '../components/protectedRoute';
 
 const DashboardPage = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [playerName, setPlayerName] = useState('Player');
 
-  const login_Data = localStorage.getItem('token')
-  const payload = JSON.parse(atob(login_Data.split('.')[1]));
-  const playerName = payload.sub
+  useEffect(() => {
+    // This code will only run on the client side
+    const loginData = localStorage.getItem('token');
+    if (loginData) {
+      try {
+        const payload = JSON.parse(atob(loginData.split('.')[1]));
+        setPlayerName(payload.sub || 'Player');
+      } catch (error) {
+        console.error('Error parsing token:', error);
+      }
+    }
+    setIsLoading(false);
+  }, []);
 
   const userData = {
     name: playerName,
@@ -22,6 +34,14 @@ const DashboardPage = () => {
     winRate: 0,
     gamesPlayed: 0,
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+      </div>
+    );
+  }
 
   const gamesData = {
     chess: { name: 'Chess', icon: '♔', status: 'Live in Beta' },
