@@ -2,24 +2,20 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import HambagerMenu from '../components/hamberger_menu';
 import ProfileIcon from '../components/profileIcon';
 import CountryFlagIcon from '../components/flagIcons';
 import NavBar from '../components/navBar';
 import ProtectedRoute from '../components/protectedRoute';
 
-// Dynamically import the ChessGame component with no SSR
-const ChessGame = dynamic(
-  () => import('../chess_abilities/chess_components/Chessboard').then(mod => mod.default),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-400"></div>
-      </div>
-    )
-  }
+// Simple placeholder component for the chess board
+const ChessGame = () => (
+  <div className="flex items-center justify-center h-[70vh] bg-chess-cards rounded-lg">
+    <div className="text-center">
+      <div className="text-2xl font-bold text-gray-300 mb-2">Chess Board</div>
+      <p className="text-gray-400">Chess functionality coming soon</p>
+    </div>
+  </div>
 );
 
 // Mock data - replace with actual user data
