@@ -42,8 +42,18 @@
   }
 }
 
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
 body {
-  background: var(--background);
+  background: var(--color-chess-aesthetic-bg-brown);
   color: var(--foreground);
   font-family: var(--font-family-sans);
+  margin: 0;
+  padding: 0;
 }
