@@ -1,8 +1,16 @@
 'use client'
-import { Chessboard, PieceDropHandlerArgs } from "react-chessboard";
+import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
 import { Chess } from "chess.js";
 import { useRef, useState, useEffect } from "react";
-import { socket } from "../test_socket_page/page";
+import { io, type Socket } from "socket.io-client";
+
+// Initialize socket client-side only
+let socket: Socket;
+
+// Only create socket on client side
+if (typeof window !== 'undefined') {
+  socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:3001');
+}
 
 interface Move {
     sid: string;
@@ -14,13 +22,24 @@ export default function TwoPlayerChess() {
     const chessGame = chessGameRef.current;
 
     const [chessPosition, setChessPosition] = useState(chessGame.fen());
-    const [isConnected, setIsConnected] = useState(socket.connected);
+    const [isConnected, setIsConnected] = useState(false);
     const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
     const [moves, setMoves] = useState<string[]>([]);
 
     useEffect(() => {
-        const onConnect = () => setIsConnected(true);
-        const onDisconnect = () => setIsConnected(false);
+        // Only run this effect on the client side
+        if (typeof window === 'undefined') return;
+
+        const onConnect = () => {
+            console.log('Connected to socket server');
+            setIsConnected(true);
+        };
+        
+        const onDisconnect = () => {
+            console.log('Disconnected from socket server');
+            setIsConnected(false);
+        };
+        
         const onMakeMove = (data: Move) => {
             try {
                 const move = chessGame.move(data.move);
@@ -35,10 +54,12 @@ export default function TwoPlayerChess() {
             }
         };
 
+        // Initialize socket connection
         socket.on('connect', onConnect);
         socket.on('disconnect', onDisconnect);
         socket.on('make_move', onMakeMove);
 
+        // Clean up event listeners on unmount
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
@@ -47,7 +68,11 @@ export default function TwoPlayerChess() {
     }, [chessGame]);
 
     const handleChessPieceMove = (moveNotation: string) => {
-        socket.emit('make_move', moveNotation);
+        if (socket && isConnected) {
+            socket.emit('make_move', moveNotation);
+        } else {
+            console.error('Cannot send move: Socket not connected');
+        }
     };
 
     const onPieceDrop = (args: PieceDropHandlerArgs) => {
@@ -116,13 +141,15 @@ export default function TwoPlayerChess() {
             <div className="container mx-auto">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="w-full md:w-2/3 flex items-center justify-center">
-                        <Chessboard
-                            onPieceDrop={onPieceDrop}
-                            canDragPiece={canDragPiece}
-                            boardOrientation={boardOrientation}
-                            position={chessPosition}
-                            id="two-player-chessboard"
-                        />
+                        <div style={{ width: '600px' }}>
+                            <Chessboard 
+                                position={chessPosition}
+                                onPieceDrop={onPieceDrop}
+                                boardWidth={600}
+                                boardOrientation={boardOrientation}
+                                arePiecesDraggable={true}
+                            />
+                        </div>
                     </div>
                     <div className="w-full md:w-1/3 flex flex-col gap-4">
                         <PlayerInfo name="Player 1 (You)" isConnected={isConnected} />
